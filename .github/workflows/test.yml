@@ -48,9 +48,9 @@ jobs:
       - uses: ./
         id: proxy
         env:
-          OPENAI_API_KEY: sk-fake-key-for-testing
+          GEMINI_API_KEY: fake-key-for-testing
         with:
-          model: openai/gpt-4o
+          model: gemini/gemini-3.1-pro
           timeout: '60'
       - name: Verify outputs are set
         run: |
@@ -77,16 +77,16 @@ jobs:
       - uses: ./
         id: proxy
         env:
-          OPENAI_API_KEY: sk-fake-key-for-testing
+          GEMINI_API_KEY: fake-key-for-testing
         with:
           config: |
             model_list:
-              - model_name: gpt-4o
+              - model_name: gemini-3.1-pro
                 litellm_params:
-                  model: openai/gpt-4o
-              - model_name: gpt-4o-mini
+                  model: gemini/gemini-3.1-pro
+              - model_name: gemini-2.0-flash
                 litellm_params:
-                  model: openai/gpt-4o-mini
+                  model: gemini/gemini-2.0-flash
           timeout: '60'
       - name: Verify health endpoint
         run: |
@@ -110,14 +110,14 @@ jobs:
         run: |
           cat > "${{ runner.temp }}/litellm-config.yaml" << 'EOF'
           model_list:
-            - model_name: gpt-4o
+            - model_name: gemini-3.1-pro
               litellm_params:
-                model: openai/gpt-4o
+                model: gemini/gemini-3.1-pro
           EOF
       - uses: ./
         id: proxy
         env:
-          OPENAI_API_KEY: sk-fake-key-for-testing
+          GEMINI_API_KEY: fake-key-for-testing
         with:
           config-path: ${{ runner.temp }}/litellm-config.yaml
           timeout: '60'
@@ -139,9 +139,9 @@ jobs:
       - uses: ./
         id: proxy
         env:
-          OPENAI_API_KEY: sk-fake-key-for-testing
+          GEMINI_API_KEY: fake-key-for-testing
         with:
-          model: openai/gpt-4o
+          model: gemini/gemini-3.1-pro
           port: '8080'
           timeout: '60'
       - name: Verify base URL uses custom port
@@ -166,9 +166,9 @@ jobs:
       - uses: ./
         id: proxy
         env:
-          OPENAI_API_KEY: sk-fake-key-for-testing
+          GEMINI_API_KEY: fake-key-for-testing
         with:
-          model: openai/gpt-4o
+          model: gemini/gemini-3.1-pro
           api-key: test-master-key-12345
           timeout: '60'
       - name: Verify authenticated request succeeds
