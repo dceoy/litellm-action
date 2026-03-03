@@ -1,6 +1,7 @@
+---
 name: Test
 
-on:
+"on":
   workflow_call:
 
 jobs:
@@ -8,8 +9,10 @@ jobs:
     name: Lint and typecheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
         with:
           node-version: 20
           cache: npm
@@ -22,8 +25,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
         with:
           node-version: 20
           cache: npm
@@ -32,7 +37,8 @@ jobs:
       - name: Verify dist/ is up to date
         run: |
           if [ -n "$(git diff --name-only dist/)" ]; then
-            echo "::error::dist/ is out of date. Run 'npm run build' and commit the changes."
+            echo "::error::dist/ is out of date."
+            echo "Run 'npm run build' and commit the changes."
             git diff --stat dist/
             exit 1
           fi
@@ -41,8 +47,10 @@ jobs:
     name: Test with model input
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: '3.12'
       - uses: ./
@@ -54,24 +62,33 @@ jobs:
           timeout: '60'
       - name: Verify outputs are set
         run: |
-          test -n "${{ steps.proxy.outputs.base-url }}"
-          test -n "${{ steps.proxy.outputs.pid }}"
+          test -n "${STEPS_PROXY_OUTPUTS_BASE_URL}"
+          test -n "${STEPS_PROXY_OUTPUTS_PID}"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
+          STEPS_PROXY_OUTPUTS_PID: ${{ steps.proxy.outputs.pid }}
       - name: Verify health endpoint
         run: |
           status=$(curl -s -o /dev/null -w '%{http_code}' \
-            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+            "${STEPS_PROXY_OUTPUTS_BASE_URL}/health/readiness")
           echo "Health status: $status"
           test "$status" = "200"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
       - name: Verify models endpoint
         run: |
-          curl -sf "${{ steps.proxy.outputs.base-url }}/v1/models" | jq .
+          curl -sf "${STEPS_PROXY_OUTPUTS_BASE_URL}/v1/models" | jq .
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
 
   test-inline-config:
     name: Test with inline config
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: '3.12'
       - uses: ./
@@ -91,19 +108,25 @@ jobs:
       - name: Verify health endpoint
         run: |
           status=$(curl -s -o /dev/null -w '%{http_code}' \
-            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+            "${STEPS_PROXY_OUTPUTS_BASE_URL}/health/readiness")
           echo "Health status: $status"
           test "$status" = "200"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
       - name: Verify models endpoint
         run: |
-          curl -sf "${{ steps.proxy.outputs.base-url }}/v1/models" | jq .
+          curl -sf "${STEPS_PROXY_OUTPUTS_BASE_URL}/v1/models" | jq .
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
 
   test-config-path:
     name: Test with config file
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: '3.12'
       - name: Create test config file
@@ -124,16 +147,20 @@ jobs:
       - name: Verify health endpoint
         run: |
           status=$(curl -s -o /dev/null -w '%{http_code}' \
-            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+            "${STEPS_PROXY_OUTPUTS_BASE_URL}/health/readiness")
           echo "Health status: $status"
           test "$status" = "200"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
 
   test-custom-port:
     name: Test with custom port
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: '3.12'
       - uses: ./
@@ -146,21 +173,27 @@ jobs:
           timeout: '60'
       - name: Verify base URL uses custom port
         run: |
-          echo "Base URL: ${{ steps.proxy.outputs.base-url }}"
-          echo "${{ steps.proxy.outputs.base-url }}" | grep -q ":8080"
+          echo "Base URL: ${STEPS_PROXY_OUTPUTS_BASE_URL}"
+          echo "${STEPS_PROXY_OUTPUTS_BASE_URL}" | grep -q ":8080"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
       - name: Verify health endpoint
         run: |
           status=$(curl -s -o /dev/null -w '%{http_code}' \
-            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+            "${STEPS_PROXY_OUTPUTS_BASE_URL}/health/readiness")
           echo "Health status: $status"
           test "$status" = "200"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
 
   test-api-key:
     name: Test with API key authentication
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: '3.12'
       - uses: ./
@@ -175,12 +208,16 @@ jobs:
         run: |
           status=$(curl -s -o /dev/null -w '%{http_code}' \
             -H "Authorization: Bearer test-master-key-12345" \
-            "${{ steps.proxy.outputs.base-url }}/v1/models")
+            "${STEPS_PROXY_OUTPUTS_BASE_URL}/v1/models")
           echo "Authenticated status: $status"
           test "$status" = "200"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
       - name: Verify unauthenticated request is rejected
         run: |
           status=$(curl -s -o /dev/null -w '%{http_code}' \
-            "${{ steps.proxy.outputs.base-url }}/v1/models")
+            "${STEPS_PROXY_OUTPUTS_BASE_URL}/v1/models")
           echo "Unauthenticated status: $status"
           test "$status" != "200"
+        env:
+          STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
