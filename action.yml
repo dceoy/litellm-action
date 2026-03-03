@@ -1,0 +1,64 @@
+name: 'LiteLLM Proxy Server'
+description: 'Start a LiteLLM proxy server for LLM API gateway in GitHub Actions'
+author: 'dceoy'
+
+branding:
+  icon: 'server'
+  color: 'blue'
+
+inputs:
+  version:
+    description: >-
+      LiteLLM version to install (e.g., "1.55.0").
+      Installs the latest version if not specified.
+    required: false
+    default: ''
+  config-path:
+    description: 'Path to a LiteLLM config.yaml file'
+    required: false
+    default: ''
+  config:
+    description: 'Inline LiteLLM configuration (YAML string)'
+    required: false
+    default: ''
+  model:
+    description: >-
+      Model to use for quick start (e.g., "openai/gpt-4o").
+      Used when no config file is provided.
+    required: false
+    default: ''
+  port:
+    description: 'Port for the proxy server'
+    required: false
+    default: '4000'
+  log-level:
+    description: 'Log level (e.g., "INFO", "DEBUG")'
+    required: false
+    default: 'INFO'
+  api-key:
+    description: 'Master API key for the proxy (sets LITELLM_MASTER_KEY)'
+    required: false
+    default: ''
+  timeout:
+    description: 'Timeout in seconds to wait for server readiness'
+    required: false
+    default: '120'
+  extra-args:
+    description: 'Additional CLI arguments for litellm (space-separated)'
+    required: false
+    default: ''
+  pip-install-args:
+    description: 'Additional pip install arguments (e.g., extra packages)'
+    required: false
+    default: ''
+
+outputs:
+  base-url:
+    description: 'Base URL of the running LiteLLM proxy server'
+  pid:
+    description: 'Process ID of the LiteLLM proxy server'
+
+runs:
+  using: 'node20'
+  main: 'dist/main/index.js'
+  post: 'dist/post/index.js'

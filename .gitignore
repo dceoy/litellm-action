@@ -80,7 +80,9 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+
+# TypeScript compiled output
+lib/
 
 # Gatsby files
 .cache/
