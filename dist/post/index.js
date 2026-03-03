@@ -25683,15 +25683,25 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
+const exec = __importStar(__nccwpck_require__(5236));
 const fs = __importStar(__nccwpck_require__(9896));
-function cleanup() {
+const os = __importStar(__nccwpck_require__(857));
+async function terminateProcess(pid) {
+    if (os.platform() === 'win32') {
+        await exec.exec('taskkill', ['/T', '/F', '/PID', pid.toString()]);
+    }
+    else {
+        process.kill(-pid, 'SIGTERM');
+    }
+}
+async function cleanup() {
     const pidStr = core.getState('pid');
     const logFile = core.getState('log-file');
     if (pidStr) {
         const pid = parseInt(pidStr, 10);
         core.info(`Stopping LiteLLM proxy (PID: ${pid})...`);
         try {
-            process.kill(-pid, 'SIGTERM');
+            await terminateProcess(pid);
             core.info('LiteLLM proxy stopped');
         }
         catch (error) {

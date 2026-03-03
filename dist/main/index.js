@@ -25745,10 +25745,12 @@ async function run() {
         const logFd = fs.openSync(logFilePath, 'w');
         core.info(`Starting LiteLLM proxy on port ${port}...`);
         core.info(`Command: litellm ${litellmArgs.join(' ')}`);
+        const isWindows = os.platform() === 'win32';
         const child = (0, child_process_1.spawn)('litellm', litellmArgs, {
-            detached: true,
+            detached: !isWindows,
             stdio: ['ignore', logFd, logFd],
             env,
+            shell: isWindows,
         });
         child.unref();
         fs.closeSync(logFd);

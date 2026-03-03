@@ -77,10 +77,12 @@ async function run(): Promise<void> {
     core.info(`Starting LiteLLM proxy on port ${port}...`);
     core.info(`Command: litellm ${litellmArgs.join(' ')}`);
 
+    const isWindows = os.platform() === 'win32';
     const child = spawn('litellm', litellmArgs, {
-      detached: true,
+      detached: !isWindows,
       stdio: ['ignore', logFd, logFd],
       env,
+      shell: isWindows,
     });
     child.unref();
     fs.closeSync(logFd);
