@@ -36,10 +36,13 @@ jobs:
       - run: npm run build
       - name: Verify dist/ is up to date
         run: |
-          if [ -n "$(git diff --name-only dist/)" ]; then
+          if [ -n "$(git diff --name-only dist/)" ] \
+            || [ -n "$(git ls-files --others --exclude-standard dist/)" ]
+          then
             echo "::error::dist/ is out of date."
-            echo "Run 'npm run build' and commit the changes."
+            echo "Run 'npm run build' and commit."
             git diff --stat dist/
+            git ls-files --others --exclude-standard dist/
             exit 1
           fi
 
