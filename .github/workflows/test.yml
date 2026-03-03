@@ -1,0 +1,186 @@
+name: Test
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: Lint and typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify dist/ is up to date
+        run: |
+          if [ -n "$(git diff --name-only dist/)" ]; then
+            echo "::error::dist/ is out of date. Run 'npm run build' and commit the changes."
+            git diff --stat dist/
+            exit 1
+          fi
+
+  test-model:
+    name: Test with model input
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./
+        id: proxy
+        env:
+          OPENAI_API_KEY: sk-fake-key-for-testing
+        with:
+          model: openai/gpt-4o
+          timeout: '60'
+      - name: Verify outputs are set
+        run: |
+          test -n "${{ steps.proxy.outputs.base-url }}"
+          test -n "${{ steps.proxy.outputs.pid }}"
+      - name: Verify health endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+          echo "Health status: $status"
+          test "$status" = "200"
+      - name: Verify models endpoint
+        run: |
+          curl -sf "${{ steps.proxy.outputs.base-url }}/v1/models" | jq .
+
+  test-inline-config:
+    name: Test with inline config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./
+        id: proxy
+        env:
+          OPENAI_API_KEY: sk-fake-key-for-testing
+        with:
+          config: |
+            model_list:
+              - model_name: gpt-4o
+                litellm_params:
+                  model: openai/gpt-4o
+              - model_name: gpt-4o-mini
+                litellm_params:
+                  model: openai/gpt-4o-mini
+          timeout: '60'
+      - name: Verify health endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+          echo "Health status: $status"
+          test "$status" = "200"
+      - name: Verify models endpoint
+        run: |
+          curl -sf "${{ steps.proxy.outputs.base-url }}/v1/models" | jq .
+
+  test-config-path:
+    name: Test with config file
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create test config file
+        run: |
+          cat > "${{ runner.temp }}/litellm-config.yaml" << 'EOF'
+          model_list:
+            - model_name: gpt-4o
+              litellm_params:
+                model: openai/gpt-4o
+          EOF
+      - uses: ./
+        id: proxy
+        env:
+          OPENAI_API_KEY: sk-fake-key-for-testing
+        with:
+          config-path: ${{ runner.temp }}/litellm-config.yaml
+          timeout: '60'
+      - name: Verify health endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+          echo "Health status: $status"
+          test "$status" = "200"
+
+  test-custom-port:
+    name: Test with custom port
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./
+        id: proxy
+        env:
+          OPENAI_API_KEY: sk-fake-key-for-testing
+        with:
+          model: openai/gpt-4o
+          port: '8080'
+          timeout: '60'
+      - name: Verify base URL uses custom port
+        run: |
+          echo "Base URL: ${{ steps.proxy.outputs.base-url }}"
+          echo "${{ steps.proxy.outputs.base-url }}" | grep -q ":8080"
+      - name: Verify health endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            "${{ steps.proxy.outputs.base-url }}/health/readiness")
+          echo "Health status: $status"
+          test "$status" = "200"
+
+  test-api-key:
+    name: Test with API key authentication
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./
+        id: proxy
+        env:
+          OPENAI_API_KEY: sk-fake-key-for-testing
+        with:
+          model: openai/gpt-4o
+          api-key: test-master-key-12345
+          timeout: '60'
+      - name: Verify authenticated request succeeds
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer test-master-key-12345" \
+            "${{ steps.proxy.outputs.base-url }}/v1/models")
+          echo "Authenticated status: $status"
+          test "$status" = "200"
+      - name: Verify unauthenticated request is rejected
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' \
+            "${{ steps.proxy.outputs.base-url }}/v1/models")
+          echo "Unauthenticated status: $status"
+          test "$status" != "200"
