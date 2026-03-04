@@ -1,17 +1,20 @@
 ---
 name: E2E Test
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      runs-on:
+        required: false
+        type: string
+        description: Runner to use
+        default: ubuntu-latest
+    secrets:
+      GEMINI_API_KEY:
+        required: false
+        description: API key for Google Gemini
+      GH_TOKEN:
+        required: false
+        description: GitHub token for accessing the repository
 permissions:
   contents: read
 defaults:
@@ -20,12 +23,14 @@ defaults:
     working-directory: .
 jobs:
   e2e-test-with-model:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           fetch-depth: 1
+          token: ${{ secrets.GH_TOKEN }}
+          persist-credentials: false
       - name: Start LiteLLM proxy with model
         id: litellm
         uses: ./
@@ -35,24 +40,33 @@ jobs:
           log-level: DEBUG
           timeout: '60'
       - name: Verify outputs
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+          STEPS_LITELLM_OUTPUTS_PID: ${{ steps.litellm.outputs.pid }}
         run: |
-          echo "base-url: ${{ steps.litellm.outputs.base-url }}"
-          echo "pid: ${{ steps.litellm.outputs.pid }}"
-          test -n "${{ steps.litellm.outputs.base-url }}"
-          test -n "${{ steps.litellm.outputs.pid }}"
+          echo "base-url: ${STEPS_LITELLM_OUTPUTS_BASE_URL}"
+          echo "pid: ${STEPS_LITELLM_OUTPUTS_PID}"
+          test -n "${STEPS_LITELLM_OUTPUTS_BASE_URL}"
+          test -n "${STEPS_LITELLM_OUTPUTS_PID}"
       - name: Check health endpoint
-        run: |
-          curl -sf "${{ steps.litellm.outputs.base-url }}/health/readiness"
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+        run: >
+          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/health/readiness"
       - name: Check model list endpoint
-        run: |
-          curl -sf "${{ steps.litellm.outputs.base-url }}/v1/models"
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+        run: >
+          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
   e2e-test-with-config:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           fetch-depth: 1
+          token: ${{ secrets.GH_TOKEN }}
+          persist-credentials: false
       - name: Start LiteLLM proxy with inline config
         id: litellm
         uses: ./
@@ -66,14 +80,21 @@ jobs:
           log-level: DEBUG
           timeout: '60'
       - name: Verify outputs
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+          STEPS_LITELLM_OUTPUTS_PID: ${{ steps.litellm.outputs.pid }}
         run: |
-          echo "base-url: ${{ steps.litellm.outputs.base-url }}"
-          echo "pid: ${{ steps.litellm.outputs.pid }}"
-          test -n "${{ steps.litellm.outputs.base-url }}"
-          test -n "${{ steps.litellm.outputs.pid }}"
+          echo "base-url: ${STEPS_LITELLM_OUTPUTS_BASE_URL}"
+          echo "pid: ${STEPS_LITELLM_OUTPUTS_PID}"
+          test -n "${STEPS_LITELLM_OUTPUTS_BASE_URL}"
+          test -n "${STEPS_LITELLM_OUTPUTS_PID}"
       - name: Check health endpoint
-        run: |
-          curl -sf "${{ steps.litellm.outputs.base-url }}/health/readiness"
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+        run: >
+          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/health/readiness"
       - name: Check model list endpoint
-        run: |
-          curl -sf "${{ steps.litellm.outputs.base-url }}/v1/models"
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+        run: >
+          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"

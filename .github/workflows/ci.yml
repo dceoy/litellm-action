@@ -67,6 +67,14 @@ jobs:
     uses: dceoy/gh-actions-for-devops/.github/workflows/github-actions-lint-and-scan.yml@main  # zizmor: ignore[unpinned-uses]
     with:
       search-path: .github/workflows
+  github-actions-e2e-test:
+    if: >
+      github.event_name == 'push'
+      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+    permissions:
+      contents: read
+    uses: ./.github/workflows/e2e-test.yml
   claude-code-review:
     if: >
       github.event_name == 'pull_request'
@@ -115,20 +123,6 @@ jobs:
     with:
       language: >
         ["javascript"]
-  dependabot-auto-merge:
-    if: >
-      github.event_name == 'pull_request'
-      && github.event.pull_request.user.login == 'dependabot[bot]'
-    needs:
-      - typescript-lint-and-test
-      - github-actions-lint-and-scan
-    permissions:
-      contents: write
-      pull-requests: write
-      actions: read
-    uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main  # zizmor: ignore[unpinned-uses]
-    with:
-      unconditional: true
   build-and-update-dist:
     if: >
       github.event_name == 'push'
@@ -170,3 +164,18 @@ jobs:
           message: Update the dist files
           push: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
+  dependabot-auto-merge:
+    if: >
+      github.event_name == 'pull_request'
+      && github.event.pull_request.user.login == 'dependabot[bot]'
+    needs:
+      - typescript-lint-and-test
+      - github-actions-lint-and-scan
+      - build-and-update-dist
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main  # zizmor: ignore[unpinned-uses]
+    with:
+      unconditional: true
