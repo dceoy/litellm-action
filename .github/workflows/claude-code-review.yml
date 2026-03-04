@@ -67,10 +67,6 @@ jobs:
           rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_SHA}/.claude/agents/" .claude/agents/
           rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_SHA}/.claude/commands/" .claude/commands/
           [[ -f .claude/commands/review-pr.md ]] || exit 1
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
-        with:
-          python-version: 3.x
       - name: Start LiteLLM proxy server
         id: litellm-proxy
         uses: ./
