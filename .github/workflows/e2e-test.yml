@@ -1,0 +1,79 @@
+---
+name: E2E Test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+    working-directory: .
+jobs:
+  e2e-test-with-model:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Start LiteLLM proxy with model
+        id: litellm
+        uses: ./
+        with:
+          model: fake-openai-endpoint
+          port: '4000'
+          log-level: DEBUG
+          timeout: '60'
+      - name: Verify outputs
+        run: |
+          echo "base-url: ${{ steps.litellm.outputs.base-url }}"
+          echo "pid: ${{ steps.litellm.outputs.pid }}"
+          test -n "${{ steps.litellm.outputs.base-url }}"
+          test -n "${{ steps.litellm.outputs.pid }}"
+      - name: Check health endpoint
+        run: |
+          curl -sf "${{ steps.litellm.outputs.base-url }}/health/readiness"
+      - name: Check model list endpoint
+        run: |
+          curl -sf "${{ steps.litellm.outputs.base-url }}/v1/models"
+  e2e-test-with-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Start LiteLLM proxy with inline config
+        id: litellm
+        uses: ./
+        with:
+          config: |
+            model_list:
+              - model_name: fake-model
+                litellm_params:
+                  model: fake-openai-endpoint
+          port: '4001'
+          log-level: DEBUG
+          timeout: '60'
+      - name: Verify outputs
+        run: |
+          echo "base-url: ${{ steps.litellm.outputs.base-url }}"
+          echo "pid: ${{ steps.litellm.outputs.pid }}"
+          test -n "${{ steps.litellm.outputs.base-url }}"
+          test -n "${{ steps.litellm.outputs.pid }}"
+      - name: Check health endpoint
+        run: |
+          curl -sf "${{ steps.litellm.outputs.base-url }}/health/readiness"
+      - name: Check model list endpoint
+        run: |
+          curl -sf "${{ steps.litellm.outputs.base-url }}/v1/models"
