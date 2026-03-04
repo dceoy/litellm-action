@@ -12,14 +12,15 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
         with:
           persist-credentials: false
+      - uses: pnpm/action-setup@a7487ba6d9d19d4a9c04cfc7b3d61eb48dd76f95  # v4.1.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run format:check
-      - run: npm run lint
-      - run: npm run typecheck
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run format:check
+      - run: pnpm run lint
+      - run: pnpm run typecheck
 
   build:
     name: Build
@@ -28,19 +29,20 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
         with:
           persist-credentials: false
+      - uses: pnpm/action-setup@a7487ba6d9d19d4a9c04cfc7b3d61eb48dd76f95  # v4.1.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run build
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
       - name: Verify dist/ is up to date
         run: |
           if [ -n "$(git diff --name-only dist/)" ] \
             || [ -n "$(git ls-files --others --exclude-standard dist/)" ]
           then
             echo "::error::dist/ is out of date."
-            echo "Run 'npm run build' and commit."
+            echo "Run 'pnpm run build' and commit."
             git diff --stat dist/
             git ls-files --others --exclude-standard dist/
             exit 1
