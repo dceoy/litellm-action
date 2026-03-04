@@ -75,6 +75,8 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/e2e-test.yml
+    secrets:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
   claude-code-review:
     if: >
       github.event_name == 'pull_request'
