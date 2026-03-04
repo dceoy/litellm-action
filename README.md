@@ -2,6 +2,8 @@
 
 GitHub Action to run [LiteLLM](https://docs.litellm.ai/) proxy server.
 
+[![CI](https://github.com/dceoy/litellm-action/actions/workflows/ci.yml/badge.svg)](https://github.com/dceoy/litellm-action/actions/workflows/ci.yml)
+
 ## Usage
 
 ### Quick start with a single model

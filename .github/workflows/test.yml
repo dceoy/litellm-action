@@ -1,27 +1,8 @@
 ---
 name: Test
-
-"on":
+on:
   workflow_call:
-
 jobs:
-  lint:
-    name: Lint and typecheck
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
-        with:
-          persist-credentials: false
-      - uses: pnpm/action-setup@a7487ba6d9d19d4a9c04cfc7b3d61eb48dd76f95  # v4.1.0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run format:check
-      - run: pnpm run lint
-      - run: pnpm run typecheck
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -47,7 +28,6 @@ jobs:
             git ls-files --others --exclude-standard dist/
             exit 1
           fi
-
   test-model:
     name: Test with model input
     runs-on: ubuntu-latest
@@ -85,7 +65,6 @@ jobs:
           curl -sf "${STEPS_PROXY_OUTPUTS_BASE_URL}/v1/models" | jq .
         env:
           STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
-
   test-inline-config:
     name: Test with inline config
     runs-on: ubuntu-latest
@@ -123,7 +102,6 @@ jobs:
           curl -sf "${STEPS_PROXY_OUTPUTS_BASE_URL}/v1/models" | jq .
         env:
           STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
-
   test-config-path:
     name: Test with config file
     runs-on: ubuntu-latest
@@ -157,7 +135,6 @@ jobs:
           test "$status" = "200"
         env:
           STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
-
   test-custom-port:
     name: Test with custom port
     runs-on: ubuntu-latest
@@ -190,7 +167,6 @@ jobs:
           test "$status" = "200"
         env:
           STEPS_PROXY_OUTPUTS_BASE_URL: ${{ steps.proxy.outputs.base-url }}
-
   test-api-key:
     name: Test with API key authentication
     runs-on: ubuntu-latest

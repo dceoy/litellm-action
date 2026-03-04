@@ -1,0 +1,103 @@
+---
+name: Mention bot using Claude Code with LiteLLM proxy
+on:
+  workflow_call:
+    inputs:
+      claude-args:
+        required: false
+        type: string
+        description: Additional arguments to pass directly to Claude Code Action
+        default: '--allowed-tools "Bash(gh:*)",mcp__github_inline_comment__create_inline_comment'
+      runs-on:
+        required: false
+        type: string
+        description: Runner to use
+        default: ubuntu-latest
+    secrets:
+      GEMINI_API_KEY:
+        required: false
+        description: API key for Google Gemini
+      GH_TOKEN:
+        required: false
+        description: GitHub token for accessing the repository
+permissions:
+  contents: read
+jobs:
+  claude-code-bot:
+    if: >
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
+      || (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
+      || (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
+      || (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read  # Required for Claude to read CI results on PRs
+    runs-on: ${{ inputs.runs-on }}
+    env:
+      ANTHROPIC_AUTH_TOKEN: sk-litellm
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: 3.x
+      - name: Start LiteLLM proxy server
+        id: litellm-proxy
+        uses: ./
+        env:
+          LITELLM_GEMINI_OPUS_MODEL: gemini/gemini-3.1-pro-preview
+          LITELLM_GEMINI_SONNET_MODEL: gemini/gemini-3.1-pro-preview
+          LITELLM_GEMINI_HAIKU_MODEL: gemini/gemini-3.1-pro-preview
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        with:
+          api-key: os.environ/ANTHROPIC_AUTH_TOKEN
+          config: |
+            model_list:
+              - model_name: ll-opus
+                litellm_params:
+                  model: os.environ/LITELLM_GEMINI_OPUS_MODEL
+                  api_key: os.environ/GEMINI_API_KEY
+              - model_name: ll-sonnet
+                litellm_params:
+                  model: os.environ/LITELLM_GEMINI_SONNET_MODEL
+                  api_key: os.environ/GEMINI_API_KEY
+              - model_name: ll-haiku
+                litellm_params:
+                  model: os.environ/LITELLM_GEMINI_HAIKU_MODEL
+                  api_key: os.environ/GEMINI_API_KEY
+            litellm_settings:
+              drop_params: true
+              fallbacks:
+                - ll-opus:
+                    - ll-sonnet
+                    - ll-haiku
+                - ll-sonnet:
+                    - ll-haiku
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@1b8ee3b94104046d71fde52ec3557651ad8c0d71  # v1.0.29
+        env:
+          ANTHROPIC_BASE_URL: ${{ steps.litellm-proxy.outputs.base-url }}
+          ANTHROPIC_API_KEY: null
+          ANTHROPIC_DEFAULT_OPUS_MODEL: ll-opus
+          ANTHROPIC_DEFAULT_SONNET_MODEL: ll-sonnet
+          ANTHROPIC_DEFAULT_HAIKU_MODEL: ll-haiku
+        with:
+          additional_permissions: |
+            actions: read   # This is an optional setting that allows Claude to read CI results on PRs
+
+          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
+          # prompt: 'Update the pull request description to include a summary of changes.'
+
+          # Optional: Add claude_args to customize behavior and configuration
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://code.claude.com/docs/en/cli-reference for available options
+          # claude_args: '--allowed-tools Bash(gh pr:*)'
+          claude_args: ${{ inputs.claude-args }}
