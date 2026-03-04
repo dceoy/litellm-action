@@ -19,13 +19,46 @@ export async function run(): Promise<void> {
     const timeout = parseInt(core.getInput('timeout') || '120', 10);
     const extraArgs = core.getInput('extra-args');
     const pipInstallArgs = core.getInput('pip-install-args');
+    const isWindows = os.platform() === 'win32';
+
+    // Install uv if not already available
+    core.startGroup('Install uv');
+    let uvFound = false;
+    try {
+      uvFound =
+        (await exec.exec('uv', ['--version'], {
+          ignoreReturnCode: true,
+          silent: true,
+        })) === 0;
+    } catch {
+      uvFound = false;
+    }
+    if (!uvFound) {
+      if (isWindows) {
+        await exec.exec('powershell', [
+          '-ExecutionPolicy',
+          'ByPass',
+          '-c',
+          'irm https://astral.sh/uv/install.ps1 | iex',
+        ]);
+      } else {
+        await exec.exec('sh', [
+          '-c',
+          'curl -LsSf https://astral.sh/uv/install.sh | sh',
+        ]);
+      }
+    }
+    const uvBinDir = path.join(os.homedir(), '.local', 'bin');
+    core.addPath(uvBinDir);
+    process.env.PATH = `${uvBinDir}${path.delimiter}${process.env.PATH ?? ''}`;
+    core.endGroup();
 
     // Install litellm
     core.startGroup('Install LiteLLM');
     const litellmPackage = version
       ? `litellm[proxy]==${version}`
       : 'litellm[proxy]';
-    const uvArgs = ['pip', 'install', litellmPackage];
+    const uvArgs = ['tool', 'install', litellmPackage];
     if (pipInstallArgs) {
       uvArgs.push(...pipInstallArgs.split(/\s+/).filter(Boolean));
     }
@@ -77,7 +110,6 @@ export async function run(): Promise<void> {
     core.info(`Starting LiteLLM proxy on port ${port}...`);
     core.info(`Command: litellm ${litellmArgs.join(' ')}`);
 
-    const isWindows = os.platform() === 'win32';
     const child = spawn('litellm', litellmArgs, {
       detached: !isWindows,
       stdio: ['ignore', logFd, logFd],

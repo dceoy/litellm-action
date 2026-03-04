@@ -20,6 +20,7 @@ jest.mock('os', () => ({
   ...jest.requireActual('os'),
   tmpdir: jest.fn(),
   platform: jest.fn(),
+  homedir: jest.fn(),
 }));
 
 import * as core from '@actions/core';
@@ -43,6 +44,7 @@ const fsMock = {
 const osMock = {
   tmpdir: os.tmpdir as jest.Mock,
   platform: os.platform as jest.Mock,
+  homedir: os.homedir as jest.Mock,
 };
 const waitForReadyMod = jest.requireMock('../wait-for-ready') as {
   waitForReady: jest.Mock;
@@ -81,6 +83,7 @@ describe('run', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    // Default: uv version check succeeds (uv is already available)
     execMock.exec.mockResolvedValue(0);
     waitForReadyMod.waitForReady.mockResolvedValue(undefined);
 
@@ -94,17 +97,24 @@ describe('run', () => {
     fsMock.readFileSync.mockReturnValue('');
     osMock.tmpdir.mockReturnValue('/tmp');
     osMock.platform.mockReturnValue('linux');
+    osMock.homedir.mockReturnValue('/home/runner');
 
     coreMock.getState.mockReturnValue('');
   });
 
-  it('should install litellm latest and start proxy with defaults', async () => {
+  it('should skip uv install and use tool install for litellm with defaults', async () => {
     setupDefaultInputs();
 
     await run();
 
+    // uv version check returns 0 → already installed, no installer invoked
+    expect(execMock.exec).not.toHaveBeenCalledWith(
+      'sh',
+      expect.arrayContaining(['curl']),
+    );
+    expect(coreMock.addPath).toHaveBeenCalledWith('/home/runner/.local/bin');
     expect(execMock.exec).toHaveBeenCalledWith('uv', [
-      'pip',
+      'tool',
       'install',
       'litellm[proxy]',
     ]);
@@ -120,13 +130,63 @@ describe('run', () => {
     expect(coreMock.setOutput).toHaveBeenCalledWith('pid', '12345');
   });
 
+  it('should install uv via shell script when uv is not available', async () => {
+    execMock.exec.mockResolvedValueOnce(1); // uv version check fails → not installed
+    setupDefaultInputs();
+
+    await run();
+
+    expect(execMock.exec).toHaveBeenCalledWith('sh', [
+      '-c',
+      'curl -LsSf https://astral.sh/uv/install.sh | sh',
+    ]);
+  });
+
+  it('should install uv via shell script when uv version check throws', async () => {
+    execMock.exec.mockRejectedValueOnce(new Error('command not found: uv'));
+    setupDefaultInputs();
+
+    await run();
+
+    expect(execMock.exec).toHaveBeenCalledWith('sh', [
+      '-c',
+      'curl -LsSf https://astral.sh/uv/install.sh | sh',
+    ]);
+  });
+
+  it('should install uv using PowerShell on Windows when not available', async () => {
+    osMock.platform.mockReturnValue('win32');
+    execMock.exec.mockResolvedValueOnce(1); // uv version check fails → not installed
+    setupDefaultInputs();
+
+    await run();
+
+    expect(execMock.exec).toHaveBeenCalledWith('powershell', [
+      '-ExecutionPolicy',
+      'ByPass',
+      '-c',
+      'irm https://astral.sh/uv/install.ps1 | iex',
+    ]);
+  });
+
+  it('should prepend uvBinDir to PATH even when PATH is undefined', async () => {
+    const savedPath = process.env.PATH;
+    delete process.env.PATH;
+    setupDefaultInputs();
+
+    await run();
+
+    expect(process.env.PATH).toContain('/home/runner/.local/bin');
+    process.env.PATH = savedPath;
+  });
+
   it('should install specific version when provided', async () => {
     setupDefaultInputs({ version: '1.55.0' });
 
     await run();
 
     expect(execMock.exec).toHaveBeenCalledWith('uv', [
-      'pip',
+      'tool',
       'install',
       'litellm[proxy]==1.55.0',
     ]);
@@ -138,7 +198,7 @@ describe('run', () => {
     await run();
 
     expect(execMock.exec).toHaveBeenCalledWith('uv', [
-      'pip',
+      'tool',
       'install',
       'litellm[proxy]',
       '--extra-pkg',
@@ -299,7 +359,9 @@ describe('run', () => {
 
   it('should display logs on error when log file exists', async () => {
     setupDefaultInputs();
-    execMock.exec.mockRejectedValue(new Error('uv pip install failed'));
+    // uv version check succeeds (uv found), litellm tool install fails
+    execMock.exec.mockResolvedValueOnce(0);
+    execMock.exec.mockRejectedValue(new Error('uv tool install failed'));
     coreMock.getState.mockImplementation((name: string) => {
       if (name === 'log-file') return '/tmp/litellm-proxy.log';
       return '';
@@ -311,22 +373,24 @@ describe('run', () => {
 
     expect(coreMock.startGroup).toHaveBeenCalledWith('LiteLLM Proxy Logs');
     expect(coreMock.info).toHaveBeenCalledWith('some log output');
-    expect(coreMock.setFailed).toHaveBeenCalledWith('uv pip install failed');
+    expect(coreMock.setFailed).toHaveBeenCalledWith('uv tool install failed');
   });
 
   it('should not display logs on error when no log-file state', async () => {
     setupDefaultInputs();
-    execMock.exec.mockRejectedValue(new Error('uv pip install failed'));
+    execMock.exec.mockResolvedValueOnce(0);
+    execMock.exec.mockRejectedValue(new Error('uv tool install failed'));
     coreMock.getState.mockReturnValue('');
 
     await run();
 
-    expect(coreMock.setFailed).toHaveBeenCalledWith('uv pip install failed');
+    expect(coreMock.setFailed).toHaveBeenCalledWith('uv tool install failed');
     expect(fsMock.readFileSync).not.toHaveBeenCalled();
   });
 
   it('should handle non-Error thrown values', async () => {
     setupDefaultInputs();
+    execMock.exec.mockResolvedValueOnce(0);
     execMock.exec.mockRejectedValue('string error');
     coreMock.getState.mockReturnValue('');
 
@@ -339,6 +403,7 @@ describe('run', () => {
 
   it('should not read logs when log-file state exists but file missing', async () => {
     setupDefaultInputs();
+    execMock.exec.mockResolvedValueOnce(0);
     execMock.exec.mockRejectedValue(new Error('fail'));
     coreMock.getState.mockImplementation((name: string) => {
       if (name === 'log-file') return '/tmp/litellm-proxy.log';
