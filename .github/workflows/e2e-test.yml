@@ -9,9 +9,9 @@ on:
         description: Runner to use
         default: ubuntu-latest
     secrets:
-      GEMINI_API_KEY:
+      OPENROUTER_API_KEY:
         required: false
-        description: API key for Google Gemini
+        description: API key for OpenRouter
       GH_TOKEN:
         required: false
         description: GitHub token for accessing the repository
@@ -24,6 +24,10 @@ defaults:
 jobs:
   e2e-test-with-model:
     runs-on: ${{ inputs.runs-on }}
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}
+      OPENROUTER_SITE_URL: https://github.com/${{ github.repository }}
+      OPENROUTER_APP_NAME: litellm-action-e2e-test
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -35,7 +39,7 @@ jobs:
         id: litellm
         uses: ./
         with:
-          model: fake-openai-endpoint
+          model: openrouter/openrouter/openrouter/free
           port: '4000'
           log-level: DEBUG
           timeout: '60'
@@ -58,8 +62,48 @@ jobs:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
           curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
+      - name: Request OpenRouter completion via LiteLLM
+        if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+        run: |
+          response_json="$(
+            curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+              -H "Content-Type: application/json" \
+              -d @- <<'JSON'
+          {
+            "model": "openrouter/openrouter/openrouter/free",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Reply with exactly: ok"
+              }
+            ],
+            "temperature": 0,
+            "max_tokens": 16
+          }
+          JSON
+          )"
+          RESPONSE_JSON="${response_json}" python3 - <<'PY'
+          import json
+          import os
+
+          data = json.loads(os.environ["RESPONSE_JSON"])
+          content = data["choices"][0]["message"]["content"]
+          if not isinstance(content, str) or not content.strip():
+              raise SystemExit("Expected non-empty completion content")
+          print(content.strip())
+          PY
+      - name: Skip OpenRouter completion test without secret
+        if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
+        run: >
+          echo "OPENROUTER_API_KEY is not set; skipping completion test."
   e2e-test-with-config:
     runs-on: ${{ inputs.runs-on }}
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}
+      OPENROUTER_SITE_URL: https://github.com/${{ github.repository }}
+      OPENROUTER_APP_NAME: litellm-action-e2e-test
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -73,9 +117,13 @@ jobs:
         with:
           config: |
             model_list:
-              - model_name: fake-model
+              - model_name: openrouter-free
                 litellm_params:
-                  model: fake-openai-endpoint
+                  model: openrouter/openrouter/openrouter/free
+                  api_key: os.environ/OPENROUTER_API_KEY
+                  extra_headers:
+                    HTTP-Referer: os.environ/OPENROUTER_SITE_URL
+                    X-Title: os.environ/OPENROUTER_APP_NAME
           port: '4001'
           log-level: DEBUG
           timeout: '60'
@@ -98,3 +146,39 @@ jobs:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
           curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
+      - name: Request OpenRouter completion via LiteLLM
+        if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
+        env:
+          STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+        run: |
+          response_json="$(
+            curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+              -H "Content-Type: application/json" \
+              -d @- <<'JSON'
+          {
+            "model": "openrouter-free",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Reply with exactly: ok"
+              }
+            ],
+            "temperature": 0,
+            "max_tokens": 16
+          }
+          JSON
+          )"
+          RESPONSE_JSON="${response_json}" python3 - <<'PY'
+          import json
+          import os
+
+          data = json.loads(os.environ["RESPONSE_JSON"])
+          content = data["choices"][0]["message"]["content"]
+          if not isinstance(content, str) or not content.strip():
+              raise SystemExit("Expected non-empty completion content")
+          print(content.strip())
+          PY
+      - name: Skip OpenRouter completion test without secret
+        if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
+        run: >
+          echo "OPENROUTER_API_KEY is not set; skipping completion test."
