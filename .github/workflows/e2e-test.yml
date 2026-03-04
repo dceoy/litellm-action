@@ -35,7 +35,7 @@ jobs:
         id: litellm
         uses: ./
         with:
-          model: openrouter/openrouter/openrouter/free
+          model: openrouter/openrouter/free
           port: '4000'
           log-level: DEBUG
           timeout: '60'
@@ -58,17 +58,18 @@ jobs:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
           curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
-      - name: Request OpenRouter completion via LiteLLM
+      - name: Request OpenRouter completion via LiteLLM (curl)
+        id: request-openrouter-completion-with-model
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: |
-          response_json="$(
-            curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
-              -H "Content-Type: application/json" \
-              -d @- <<'JSON'
+          response_file="${RUNNER_TEMP}/openrouter-completion-with-model.json"
+          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+            -H "Content-Type: application/json" \
+            -d @- > "${response_file}" <<'JSON'
           {
-            "model": "openrouter/openrouter/openrouter/free",
+            "model": "openrouter/openrouter/free",
             "messages": [
               {
                 "role": "user",
@@ -79,21 +80,39 @@ jobs:
             "max_tokens": 16
           }
           JSON
-          )"
-          RESPONSE_JSON="${response_json}" python3 - <<'PY'
+          echo "response-file=${response_file}" >> "${GITHUB_OUTPUT}"
+      - name: Validate OpenRouter completion response (python3)
+        if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
+        shell: python3 {0}
+        env:
+          RESPONSE_FILE: ${{ steps.request-openrouter-completion-with-model.outputs.response-file }}
+        run: |
           import json
           import os
 
-          data = json.loads(os.environ["RESPONSE_JSON"])
+          response_file = os.environ["RESPONSE_FILE"]
+          with open(response_file, encoding="utf-8") as f:
+              data = json.load(f)
           content = data["choices"][0]["message"]["content"]
           if not isinstance(content, str) or not content.strip():
               raise SystemExit("Expected non-empty completion content")
           print(content.strip())
-          PY
       - name: Skip OpenRouter completion test without secret
         if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
         run: >
           echo "OPENROUTER_API_KEY is not set; skipping completion test."
+      - name: Dump LiteLLM proxy logs on failure
+        if: ${{ failure() }}
+        run: |
+          for log_file in /tmp/litellm-proxy.log "${RUNNER_TEMP}/litellm-proxy.log"; do
+            if [[ -f "${log_file}" ]]; then
+              echo "::group::LiteLLM proxy logs (${log_file})"
+              tail -n 400 "${log_file}"
+              echo "::endgroup::"
+              exit 0
+            fi
+          done
+          echo "LiteLLM proxy log file was not found."
   e2e-test-with-config:
     runs-on: ${{ inputs.runs-on }}
     env:
@@ -114,7 +133,7 @@ jobs:
             model_list:
               - model_name: openrouter-free
                 litellm_params:
-                  model: openrouter/openrouter/openrouter/free
+                  model: openrouter/openrouter/free
                   api_key: os.environ/OPENROUTER_API_KEY
                   extra_headers:
                     HTTP-Referer: os.environ/OPENROUTER_SITE_URL
@@ -141,15 +160,16 @@ jobs:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
           curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
-      - name: Request OpenRouter completion via LiteLLM
+      - name: Request OpenRouter completion via LiteLLM (curl)
+        id: request-openrouter-completion-with-config
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: |
-          response_json="$(
-            curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
-              -H "Content-Type: application/json" \
-              -d @- <<'JSON'
+          response_file="${RUNNER_TEMP}/openrouter-completion-with-config.json"
+          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+            -H "Content-Type: application/json" \
+            -d @- > "${response_file}" <<'JSON'
           {
             "model": "openrouter-free",
             "messages": [
@@ -162,18 +182,36 @@ jobs:
             "max_tokens": 16
           }
           JSON
-          )"
-          RESPONSE_JSON="${response_json}" python3 - <<'PY'
+          echo "response-file=${response_file}" >> "${GITHUB_OUTPUT}"
+      - name: Validate OpenRouter completion response (python3)
+        if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
+        shell: python3 {0}
+        env:
+          RESPONSE_FILE: ${{ steps.request-openrouter-completion-with-config.outputs.response-file }}
+        run: |
           import json
           import os
 
-          data = json.loads(os.environ["RESPONSE_JSON"])
+          response_file = os.environ["RESPONSE_FILE"]
+          with open(response_file, encoding="utf-8") as f:
+              data = json.load(f)
           content = data["choices"][0]["message"]["content"]
           if not isinstance(content, str) or not content.strip():
               raise SystemExit("Expected non-empty completion content")
           print(content.strip())
-          PY
       - name: Skip OpenRouter completion test without secret
         if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
         run: >
           echo "OPENROUTER_API_KEY is not set; skipping completion test."
+      - name: Dump LiteLLM proxy logs on failure
+        if: ${{ failure() }}
+        run: |
+          for log_file in /tmp/litellm-proxy.log "${RUNNER_TEMP}/litellm-proxy.log"; do
+            if [[ -f "${log_file}" ]]; then
+              echo "::group::LiteLLM proxy logs (${log_file})"
+              tail -n 400 "${log_file}"
+              echo "::endgroup::"
+              exit 0
+            fi
+          done
+          echo "LiteLLM proxy log file was not found."
