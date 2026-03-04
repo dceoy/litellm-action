@@ -45,7 +45,7 @@ jobs:
   typescript-lint-and-test:
     if: >
       github.event_name == 'push'
-      || github.event_name == 'pull_request'
+      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
@@ -56,6 +56,10 @@ jobs:
       node-version: latest
       audit: true
   github-actions-lint-and-scan:
+    if: >
+      github.event_name == 'push'
+      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
       actions: read
