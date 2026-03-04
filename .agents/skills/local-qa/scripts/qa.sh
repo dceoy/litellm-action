@@ -9,6 +9,7 @@ pnpm run format
 pnpm run audit:fix
 pnpm run lint:fix
 pnpm run typecheck
+pnpm run build
 pnpm run test
 
 # Shell

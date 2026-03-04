@@ -32,6 +32,7 @@ on:
         type: choice
         options:
           - lint-and-test
+          - update
         description: Choose the workflow to run
         default: lint-and-test
 permissions:
@@ -125,3 +126,43 @@ jobs:
     uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main  # zizmor: ignore[unpinned-uses]
     with:
       unconditional: true
+  build-and-update-dist:
+    if: >
+      github.event_name == 'push'
+      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'update')
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 1
+          ref: ${{ github.head_ref || github.ref_name }}
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238  # v6.2.0
+        with:
+          node-version: latest
+          cache: pnpm
+      - name: Install pnpm
+        run: >
+          npm install -g pnpm
+      - name: Install dependencies
+        run: >
+          pnpm install --frozen-lockfile
+      - name: Build the project
+        run: >
+          pnpm run build
+      - name: Format and lint the generated files
+        run: >
+          pnpm format && pnpm lint:fix
+      - name: Commit and push the changes
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
+        with:
+          add: ./dist
+          message: Update dist/
+          push: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
