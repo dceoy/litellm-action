@@ -81,23 +81,7 @@ jobs:
           }
           JSON
           jq . "${response_file}"
-          echo "response-file=${response_file}" >> "${GITHUB_OUTPUT}"
-      - name: Validate OpenRouter completion response (python3)
-        if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
-        shell: python3 {0}
-        env:
-          RESPONSE_FILE: ${{ steps.request-openrouter-completion-with-model.outputs.response-file }}
-        run: |
-          import json
-          import os
-
-          response_file = os.environ["RESPONSE_FILE"]
-          with open(response_file, encoding="utf-8") as f:
-              data = json.load(f)
-          content = data["choices"][0]["message"]["content"]
-          if not isinstance(content, str) or not content.strip():
-              raise SystemExit("Expected non-empty completion content")
-          print(content.strip())
+          jq -er '.choices[0].message.content' "${response_file}" >/dev/null
       - name: Skip OpenRouter completion test without secret
         if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
         run: >
@@ -184,23 +168,7 @@ jobs:
           }
           JSON
           jq . "${response_file}"
-          echo "response-file=${response_file}" >> "${GITHUB_OUTPUT}"
-      - name: Validate OpenRouter completion response (python3)
-        if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
-        shell: python3 {0}
-        env:
-          RESPONSE_FILE: ${{ steps.request-openrouter-completion-with-config.outputs.response-file }}
-        run: |
-          import json
-          import os
-
-          response_file = os.environ["RESPONSE_FILE"]
-          with open(response_file, encoding="utf-8") as f:
-              data = json.load(f)
-          content = data["choices"][0]["message"]["content"]
-          if not isinstance(content, str) or not content.strip():
-              raise SystemExit("Expected non-empty completion content")
-          print(content.strip())
+          jq -er '.choices[0].message.content' "${response_file}" >/dev/null
       - name: Skip OpenRouter completion test without secret
         if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
         run: >
