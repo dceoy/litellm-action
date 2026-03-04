@@ -1,6 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
+
 - `src/main.ts`: action entrypoint that installs LiteLLM, starts the proxy, and sets outputs.
 - `src/post.ts`: post-action cleanup that terminates the proxy and prints logs.
 - `src/wait-for-ready.ts`: readiness polling helper used by `main.ts`.
@@ -10,6 +11,7 @@
 - `.github/workflows/`: CI, lint/scan, and integration tests for action behavior.
 
 ## Build, Test, and Development Commands
+
 - `npm ci`: install dependencies from `package-lock.json`.
 - `npm run format`: format `src/**/*.ts` with Prettier.
 - `npm run format:check`: verify formatting without changing files.
@@ -20,18 +22,21 @@
 - Typical pre-PR check: `npm ci && npm run all`.
 
 ## Coding Style & Naming Conventions
+
 - Use TypeScript strict mode conventions from `tsconfig.json` (`strict`, no unused locals/params).
 - Follow Prettier config: 2 spaces, single quotes, semicolons, trailing commas, 80-char width.
 - Use `camelCase` for variables/functions and clear verb-based function names (e.g., `waitForReady`).
 - Keep responsibilities split: startup in `main.ts`, teardown in `post.ts`, reusable logic in helpers.
 
 ## Testing Guidelines
+
 - No standalone unit test framework is configured; testing is workflow-driven in `.github/workflows/test.yml`.
 - CI covers formatting, linting, type checking, build consistency, and integration scenarios.
 - When behavior changes, update/add workflow checks that validate outputs and HTTP endpoints.
 - Ensure `dist/` is regenerated after source changes; CI fails if `dist/` is stale or untracked.
 
 ## Commit & Pull Request Guidelines
+
 - Use short imperative commit subjects (examples in history: `Improve CI workflow`, `Fix actionlint findings`).
 - Keep commits focused to one logical change and include updated `dist/` when applicable.
 - PRs should include purpose, behavior changes, and any `action.yml`/`README.md` contract updates.

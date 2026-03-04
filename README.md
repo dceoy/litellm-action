@@ -54,25 +54,25 @@ steps:
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|---|---|---|---|
-| `version` | LiteLLM version to install (e.g., `1.55.0`) | No | Latest |
-| `config-path` | Path to a LiteLLM `config.yaml` file | No | |
-| `config` | Inline LiteLLM configuration (YAML string) | No | |
-| `model` | Model to use for quick start (e.g., `gemini/gemini-3.1-pro-preview`) | No | |
-| `port` | Port for the proxy server | No | `4000` |
-| `log-level` | Log level (e.g., `INFO`, `DEBUG`) | No | `INFO` |
-| `api-key` | Master API key for the proxy | No | |
-| `timeout` | Timeout in seconds to wait for server readiness | No | `120` |
-| `extra-args` | Additional CLI arguments for litellm | No | |
-| `pip-install-args` | Additional pip install arguments | No | |
+| Input              | Description                                                          | Required | Default |
+| ------------------ | -------------------------------------------------------------------- | -------- | ------- |
+| `version`          | LiteLLM version to install (e.g., `1.55.0`)                          | No       | Latest  |
+| `config-path`      | Path to a LiteLLM `config.yaml` file                                 | No       |         |
+| `config`           | Inline LiteLLM configuration (YAML string)                           | No       |         |
+| `model`            | Model to use for quick start (e.g., `gemini/gemini-3.1-pro-preview`) | No       |         |
+| `port`             | Port for the proxy server                                            | No       | `4000`  |
+| `log-level`        | Log level (e.g., `INFO`, `DEBUG`)                                    | No       | `INFO`  |
+| `api-key`          | Master API key for the proxy                                         | No       |         |
+| `timeout`          | Timeout in seconds to wait for server readiness                      | No       | `120`   |
+| `extra-args`       | Additional CLI arguments for litellm                                 | No       |         |
+| `pip-install-args` | Additional pip install arguments                                     | No       |         |
 
 ## Outputs
 
-| Output | Description |
-|---|---|
+| Output     | Description                                  |
+| ---------- | -------------------------------------------- |
 | `base-url` | Base URL of the running LiteLLM proxy server |
-| `pid` | Process ID of the LiteLLM proxy server |
+| `pid`      | Process ID of the LiteLLM proxy server       |
 
 ## License
 
