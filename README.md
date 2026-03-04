@@ -45,9 +45,9 @@ steps:
             litellm_params:
               model: gemini/gemini-3.1-pro-preview
               api_key: os.environ/GEMINI_API_KEY
-          - model_name: gemini-2.5-flash
+          - model_name: gemini-3-flash-preview
             litellm_params:
-              model: gemini/gemini-2.5-flash
+              model: gemini/gemini-3-flash-preview
               api_key: os.environ/GEMINI_API_KEY
       port: '8080'
 ```
