@@ -49,6 +49,7 @@ jobs:
         id: litellm-proxy
         uses: ./
         env:
+          LITELLM_ANTHROPIC_DISABLE_NO_PROVIDER_ERROR: 'true'
           LITELLM_GEMINI_OPUS_MODEL: gemini/gemini-3.1-pro-preview
           LITELLM_GEMINI_SONNET_MODEL: gemini/gemini-3.1-pro-preview
           LITELLM_GEMINI_HAIKU_MODEL: gemini/gemini-3.1-pro-preview
@@ -81,12 +82,11 @@ jobs:
         uses: anthropics/claude-code-action@1b8ee3b94104046d71fde52ec3557651ad8c0d71  # v1.0.29
         env:
           ANTHROPIC_BASE_URL: ${{ steps.litellm-proxy.outputs.base-url }}
-          ANTHROPIC_AUTH_TOKEN: ${{ env.LITELLM_MASTER_KEY }}
           ANTHROPIC_DEFAULT_OPUS_MODEL: ll-opus
           ANTHROPIC_DEFAULT_SONNET_MODEL: ll-sonnet
           ANTHROPIC_DEFAULT_HAIKU_MODEL: ll-haiku
         with:
-          anthropic_api_key: ''
+          anthropic_api_key: ${{ env.LITELLM_MASTER_KEY }}
           additional_permissions: |
             actions: read   # This is an optional setting that allows Claude to read CI results on PRs
 

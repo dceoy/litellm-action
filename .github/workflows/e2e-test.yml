@@ -80,6 +80,7 @@ jobs:
             "max_tokens": 16
           }
           JSON
+          jq . "${response_file}"
           echo "response-file=${response_file}" >> "${GITHUB_OUTPUT}"
       - name: Validate OpenRouter completion response (python3)
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
@@ -182,6 +183,7 @@ jobs:
             "max_tokens": 16
           }
           JSON
+          jq . "${response_file}"
           echo "response-file=${response_file}" >> "${GITHUB_OUTPUT}"
       - name: Validate OpenRouter completion response (python3)
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
