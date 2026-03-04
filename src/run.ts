@@ -25,11 +25,11 @@ export async function run(): Promise<void> {
     const litellmPackage = version
       ? `litellm[proxy]==${version}`
       : 'litellm[proxy]';
-    const pipArgs = ['install', litellmPackage];
+    const uvArgs = ['pip', 'install', litellmPackage];
     if (pipInstallArgs) {
-      pipArgs.push(...pipInstallArgs.split(/\s+/).filter(Boolean));
+      uvArgs.push(...pipInstallArgs.split(/\s+/).filter(Boolean));
     }
-    await exec.exec('pip', pipArgs);
+    await exec.exec('uv', uvArgs);
     core.endGroup();
 
     // Determine config file path

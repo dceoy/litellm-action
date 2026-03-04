@@ -48,7 +48,7 @@ inputs:
     required: false
     default: ''
   pip-install-args:
-    description: 'Additional pip install arguments (e.g., extra packages)'
+    description: 'Additional uv pip install arguments (e.g., extra packages)'
     required: false
     default: ''
 
