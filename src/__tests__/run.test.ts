@@ -103,7 +103,8 @@ describe('run', () => {
 
     await run();
 
-    expect(execMock.exec).toHaveBeenCalledWith('pip', [
+    expect(execMock.exec).toHaveBeenCalledWith('uv', [
+      'pip',
       'install',
       'litellm[proxy]',
     ]);
@@ -124,7 +125,8 @@ describe('run', () => {
 
     await run();
 
-    expect(execMock.exec).toHaveBeenCalledWith('pip', [
+    expect(execMock.exec).toHaveBeenCalledWith('uv', [
+      'pip',
       'install',
       'litellm[proxy]==1.55.0',
     ]);
@@ -135,7 +137,8 @@ describe('run', () => {
 
     await run();
 
-    expect(execMock.exec).toHaveBeenCalledWith('pip', [
+    expect(execMock.exec).toHaveBeenCalledWith('uv', [
+      'pip',
       'install',
       'litellm[proxy]',
       '--extra-pkg',
@@ -296,7 +299,7 @@ describe('run', () => {
 
   it('should display logs on error when log file exists', async () => {
     setupDefaultInputs();
-    execMock.exec.mockRejectedValue(new Error('pip install failed'));
+    execMock.exec.mockRejectedValue(new Error('uv pip install failed'));
     coreMock.getState.mockImplementation((name: string) => {
       if (name === 'log-file') return '/tmp/litellm-proxy.log';
       return '';
@@ -308,17 +311,17 @@ describe('run', () => {
 
     expect(coreMock.startGroup).toHaveBeenCalledWith('LiteLLM Proxy Logs');
     expect(coreMock.info).toHaveBeenCalledWith('some log output');
-    expect(coreMock.setFailed).toHaveBeenCalledWith('pip install failed');
+    expect(coreMock.setFailed).toHaveBeenCalledWith('uv pip install failed');
   });
 
   it('should not display logs on error when no log-file state', async () => {
     setupDefaultInputs();
-    execMock.exec.mockRejectedValue(new Error('pip install failed'));
+    execMock.exec.mockRejectedValue(new Error('uv pip install failed'));
     coreMock.getState.mockReturnValue('');
 
     await run();
 
-    expect(coreMock.setFailed).toHaveBeenCalledWith('pip install failed');
+    expect(coreMock.setFailed).toHaveBeenCalledWith('uv pip install failed');
     expect(fsMock.readFileSync).not.toHaveBeenCalled();
   });
 
