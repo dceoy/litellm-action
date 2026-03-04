@@ -29,21 +29,24 @@ jobs:
         uses: dceoy/litellm-action@v0
         id: litellm
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
+          api-key: sk-litellm
           config: |
             model_list:
               - model_name: claude-opus-4-6
                 litellm_params:
-                  model: anthropic/claude-opus-4-6
-                  api_key: os.environ/ANTHROPIC_API_KEY
+                  model: gemini/gemini-3.1-pro-preview
+                  api_key: os.environ/GEMINI_API_KEY
+            litellm_settings:
+              drop_params: true
 
       - name: PR Review with Claude via LiteLLM proxy
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_api_key: sk-litellm
           prompt: >-
             /review-pr REPO: ${{ github.repository }}
             PR_NUMBER: ${{ github.event.pull_request.number }}
