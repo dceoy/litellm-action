@@ -5,11 +5,12 @@ set -euox pipefail
 cd "$(git rev-parse --show-toplevel)"
 
 # TypeScript
+pnpm install --no-frozen-lockfile
+pnpm run build
 pnpm run format
 pnpm run audit:fix
 pnpm run lint:fix
 pnpm run typecheck
-pnpm run build
 pnpm run test
 
 # Shell
