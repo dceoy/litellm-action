@@ -69,7 +69,7 @@ jobs:
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
           MAX_ATTEMPTS: ${{ inputs.max-attempts }}
-          REQUEST_BODY: '{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
+          REQUEST_BODY: '{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":64}'
         run: |
           delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
@@ -157,7 +157,7 @@ jobs:
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
           MAX_ATTEMPTS: ${{ inputs.max-attempts }}
-          REQUEST_BODY: '{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
+          REQUEST_BODY: '{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":64}'
         run: |
           delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
