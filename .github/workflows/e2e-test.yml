@@ -64,16 +64,14 @@ jobs:
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: |
-          response_file="${RUNNER_TEMP}/openrouter-completion-with-model.json"
           request_body='{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
           for attempt in 1 2 3; do
             if curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
               -d "${request_body}" \
-              > "${response_file}" \
-              && jq . "${response_file}" \
-              && jq -er '.choices[0].message.content' "${response_file}" >/dev/null; then
+              | tee >(jq -er '.choices[0].message.content' >/dev/null) \
+              | jq .; then
               break
             elif [[ ${attempt} -lt 3 ]]; then
               echo "Attempt ${attempt} failed; retrying in 10s..."
@@ -151,16 +149,14 @@ jobs:
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: |
-          response_file="${RUNNER_TEMP}/openrouter-completion-with-config.json"
           request_body='{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
           for attempt in 1 2 3; do
             if curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
               -d "${request_body}" \
-              > "${response_file}" \
-              && jq . "${response_file}" \
-              && jq -er '.choices[0].message.content' "${response_file}" >/dev/null; then
+              | tee >(jq -er '.choices[0].message.content' >/dev/null) \
+              | jq .; then
               break
             elif [[ ${attempt} -lt 3 ]]; then
               echo "Attempt ${attempt} failed; retrying in 10s..."
