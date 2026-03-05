@@ -4,6 +4,10 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
   testMatch: ['**/__tests__/**/*.test.ts'],
+  moduleNameMapper: {
+    '^@actions/core$': '<rootDir>/src/__tests__/mocks/actions-core.ts',
+    '^@actions/exec$': '<rootDir>/src/__tests__/mocks/actions-exec.ts',
+  },
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/__tests__/**',

@@ -5,9 +5,10 @@
   "description": "GitHub Action to run LiteLLM proxy server",
   "main": "dist/main/index.js",
   "scripts": {
-    "build": "pnpm run build:main && pnpm run build:post",
-    "build:main": "ncc build src/main.ts -o dist/main --source-map --license licenses.txt && node scripts/prepend-license.js dist/main/licenses.txt",
-    "build:post": "ncc build src/post.ts -o dist/post --source-map --license licenses.txt && node scripts/prepend-license.js dist/post/licenses.txt",
+    "build": "pnpm run build:prep && pnpm run build:main && pnpm run build:post",
+    "build:prep": "tsc -p tsconfig.build.json",
+    "build:main": "ncc build lib/main.js -o dist/main --source-map --license licenses.txt && node scripts/prepend-license.js dist/main/licenses.txt",
+    "build:post": "ncc build lib/post.js -o dist/post --source-map --license licenses.txt && node scripts/prepend-license.js dist/post/licenses.txt",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern .",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern .",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,html,md}'",
@@ -30,8 +31,8 @@
   ],
   "license": "AGPL-3.0",
   "dependencies": {
-    "@actions/core": "^1.11.1",
-    "@actions/exec": "^1.1.1"
+    "@actions/core": "^3.0.0",
+    "@actions/exec": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
