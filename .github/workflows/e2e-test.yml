@@ -68,18 +68,18 @@ jobs:
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+          MAX_ATTEMPTS: ${{ inputs.max-attempts }}
+          REQUEST_BODY: '{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
         run: |
-          max_attempts=${{ inputs.max-attempts }}
-          request_body='{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
-          for attempt in $(seq 1 "${max_attempts}"); do
+          for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
             response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${request_body}")
+              -d "${REQUEST_BODY}")
             if jq . <<<"${response}" \
               && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
-            elif [[ ${attempt} -lt ${max_attempts} ]]; then
+            elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
               echo "Attempt ${attempt} failed; retrying in 10s..."
               sleep 10
             else
@@ -154,18 +154,18 @@ jobs:
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
+          MAX_ATTEMPTS: ${{ inputs.max-attempts }}
+          REQUEST_BODY: '{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
         run: |
-          max_attempts=${{ inputs.max-attempts }}
-          request_body='{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
-          for attempt in $(seq 1 "${max_attempts}"); do
+          for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
             response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${request_body}")
+              -d "${REQUEST_BODY}")
             if jq . <<<"${response}" \
               && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
-            elif [[ ${attempt} -lt ${max_attempts} ]]; then
+            elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
               echo "Attempt ${attempt} failed; retrying in 10s..."
               sleep 10
             else
