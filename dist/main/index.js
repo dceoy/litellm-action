@@ -95024,7 +95024,7 @@ ${pendingInterceptorsFormatter.format(pending)}
     function getCacheKey(version, pipInstallArgs) {
       const platform = external_os_.platform();
       const arch = external_os_.arch();
-      const versionPart = version || 'latest';
+      const versionPart = version;
       const hash = external_crypto_namespaceObject
         .createHash('sha256')
         .update(pipInstallArgs)
@@ -95117,14 +95117,14 @@ ${pendingInterceptorsFormatter.format(pending)}
         const timeout = parseInt(getInput('timeout') || '120', 10);
         const extraArgs = getInput('extra-args');
         const pipInstallArgs = getInput('pip-install-args');
-        const cacheEnabled = getInput('cache') !== 'false';
+        const cacheEnabled = getInput('cache') !== 'false' && version !== '';
         const isWindows = external_os_.platform() === 'win32';
         const uvBinDir = external_path_.join(
           external_os_.homedir(),
           '.local',
           'bin',
         );
-        // Try to restore from cache
+        // Try to restore from cache (only when version is pinned)
         let cacheHit = false;
         if (cacheEnabled) {
           startGroup('Restore LiteLLM cache');

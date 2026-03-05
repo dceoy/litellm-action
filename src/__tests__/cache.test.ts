@@ -61,10 +61,10 @@ describe('cache', () => {
       expect(key).toMatch(/^litellm-linux-x64-1\.55\.0-[a-f0-9]{16}$/);
     });
 
-    it('should use "latest" when version is empty', () => {
+    it('should use empty version verbatim in key', () => {
       const key = getCacheKey('', '');
 
-      expect(key).toMatch(/^litellm-linux-x64-latest-[a-f0-9]{16}$/);
+      expect(key).toMatch(/^litellm-linux-x64--[a-f0-9]{16}$/);
     });
 
     it('should produce different keys for different pip-install-args', () => {

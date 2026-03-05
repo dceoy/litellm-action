@@ -20,12 +20,12 @@ export async function run(): Promise<void> {
     const timeout = parseInt(core.getInput('timeout') || '120', 10);
     const extraArgs = core.getInput('extra-args');
     const pipInstallArgs = core.getInput('pip-install-args');
-    const cacheEnabled = core.getInput('cache') !== 'false';
+    const cacheEnabled = core.getInput('cache') !== 'false' && version !== '';
     const isWindows = os.platform() === 'win32';
 
     const uvBinDir = path.join(os.homedir(), '.local', 'bin');
 
-    // Try to restore from cache
+    // Try to restore from cache (only when version is pinned)
     let cacheHit = false;
     if (cacheEnabled) {
       core.startGroup('Restore LiteLLM cache');

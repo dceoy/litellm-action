@@ -426,17 +426,26 @@ describe('run', () => {
   });
 
   describe('caching', () => {
-    it('should attempt cache restore by default', async () => {
+    it('should attempt cache restore when version is pinned', async () => {
+      setupDefaultInputs({ version: '1.55.0' });
+
+      await run();
+
+      expect(cacheMod.restoreLitellmCache).toHaveBeenCalledWith('1.55.0', '');
+    });
+
+    it('should skip caching when version is not pinned', async () => {
       setupDefaultInputs();
 
       await run();
 
-      expect(cacheMod.restoreLitellmCache).toHaveBeenCalledWith('', '');
+      expect(cacheMod.restoreLitellmCache).not.toHaveBeenCalled();
+      expect(cacheMod.saveLitellmCache).not.toHaveBeenCalled();
     });
 
     it('should skip install and save when cache is hit', async () => {
       cacheMod.restoreLitellmCache.mockResolvedValue(true);
-      setupDefaultInputs();
+      setupDefaultInputs({ version: '1.55.0' });
 
       await run();
 

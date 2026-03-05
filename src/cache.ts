@@ -15,7 +15,7 @@ export function getCachePaths(): string[] {
 export function getCacheKey(version: string, pipInstallArgs: string): string {
   const platform = os.platform();
   const arch = os.arch();
-  const versionPart = version || 'latest';
+  const versionPart = version;
   const hash = crypto
     .createHash('sha256')
     .update(pipInstallArgs)
