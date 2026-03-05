@@ -66,12 +66,12 @@ jobs:
         run: |
           request_body='{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
           for attempt in 1 2 3; do
-            if curl -sf \
+            response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${request_body}" \
-              | tee >(jq -er '.choices[0].message.content' >/dev/null) \
-              | jq .; then
+              -d "${request_body}")
+            if jq . <<<"${response}" \
+              && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
             elif [[ ${attempt} -lt 3 ]]; then
               echo "Attempt ${attempt} failed; retrying in 10s..."
@@ -151,12 +151,12 @@ jobs:
         run: |
           request_body='{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
           for attempt in 1 2 3; do
-            if curl -sf \
+            response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${request_body}" \
-              | tee >(jq -er '.choices[0].message.content' >/dev/null) \
-              | jq .; then
+              -d "${request_body}")
+            if jq . <<<"${response}" \
+              && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
             elif [[ ${attempt} -lt 3 ]]; then
               echo "Attempt ${attempt} failed; retrying in 10s..."
