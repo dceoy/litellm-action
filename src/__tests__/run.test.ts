@@ -4,6 +4,7 @@ import type * as child_process_types from 'child_process';
 jest.mock('@actions/core');
 jest.mock('@actions/exec');
 jest.mock('../wait-for-ready');
+jest.mock('../cache');
 jest.mock('child_process', () => ({
   ...jest.requireActual('child_process'),
   spawn: jest.fn(),
@@ -49,6 +50,10 @@ const osMock = {
 const waitForReadyMod = jest.requireMock('../wait-for-ready') as {
   waitForReady: jest.Mock;
 };
+const cacheMod = jest.requireMock('../cache') as {
+  restoreLitellmCache: jest.Mock;
+  saveLitellmCache: jest.Mock;
+};
 
 import { run } from '../run';
 
@@ -64,6 +69,7 @@ function setupDefaultInputs(overrides: Record<string, string> = {}): void {
     timeout: '',
     'extra-args': '',
     'pip-install-args': '',
+    cache: '',
     ...overrides,
   };
 
@@ -86,6 +92,8 @@ describe('run', () => {
     // Default: uv version check succeeds (uv is already available)
     execMock.exec.mockResolvedValue(0);
     waitForReadyMod.waitForReady.mockResolvedValue(undefined);
+    cacheMod.restoreLitellmCache.mockResolvedValue(false);
+    cacheMod.saveLitellmCache.mockResolvedValue(undefined);
 
     spawnMock.mockReturnValue(
       createMockChild(12345) as ReturnType<typeof child_process.spawn>,
@@ -415,5 +423,86 @@ describe('run', () => {
 
     expect(coreMock.setFailed).toHaveBeenCalledWith('fail');
     expect(fsMock.readFileSync).not.toHaveBeenCalled();
+  });
+
+  describe('caching', () => {
+    it('should attempt cache restore by default', async () => {
+      setupDefaultInputs();
+
+      await run();
+
+      expect(cacheMod.restoreLitellmCache).toHaveBeenCalledWith('', '');
+    });
+
+    it('should skip install and save when cache is hit', async () => {
+      cacheMod.restoreLitellmCache.mockResolvedValue(true);
+      setupDefaultInputs();
+
+      await run();
+
+      // Should not install uv or litellm
+      expect(execMock.exec).not.toHaveBeenCalledWith(
+        'uv',
+        expect.arrayContaining(['--version']),
+        expect.anything(),
+      );
+      expect(execMock.exec).not.toHaveBeenCalledWith(
+        'uv',
+        expect.arrayContaining(['tool', 'install']),
+      );
+      // Should not save cache (already cached)
+      expect(cacheMod.saveLitellmCache).not.toHaveBeenCalled();
+      // Should still add bin dir to PATH
+      expect(coreMock.addPath).toHaveBeenCalledWith('/home/runner/.local/bin');
+      // Should still spawn litellm
+      expect(spawnMock).toHaveBeenCalled();
+    });
+
+    it('should install and save cache on cache miss', async () => {
+      cacheMod.restoreLitellmCache.mockResolvedValue(false);
+      setupDefaultInputs({ version: '1.55.0' });
+
+      await run();
+
+      expect(execMock.exec).toHaveBeenCalledWith('uv', [
+        'tool',
+        'install',
+        'litellm[proxy]==1.55.0',
+      ]);
+      expect(cacheMod.saveLitellmCache).toHaveBeenCalledWith('1.55.0', '');
+    });
+
+    it('should pass version and pip-install-args to cache functions', async () => {
+      setupDefaultInputs({
+        version: '1.55.0',
+        'pip-install-args': '--extra foo',
+      });
+
+      await run();
+
+      expect(cacheMod.restoreLitellmCache).toHaveBeenCalledWith(
+        '1.55.0',
+        '--extra foo',
+      );
+      expect(cacheMod.saveLitellmCache).toHaveBeenCalledWith(
+        '1.55.0',
+        '--extra foo',
+      );
+    });
+
+    it('should skip caching when cache input is "false"', async () => {
+      setupDefaultInputs({ cache: 'false' });
+
+      await run();
+
+      expect(cacheMod.restoreLitellmCache).not.toHaveBeenCalled();
+      expect(cacheMod.saveLitellmCache).not.toHaveBeenCalled();
+      // Should still install normally
+      expect(execMock.exec).toHaveBeenCalledWith('uv', [
+        'tool',
+        'install',
+        'litellm[proxy]',
+      ]);
+    });
   });
 });

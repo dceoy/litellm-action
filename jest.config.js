@@ -5,6 +5,7 @@ module.exports = {
   roots: ['<rootDir>/src'],
   testMatch: ['**/__tests__/**/*.test.ts'],
   moduleNameMapper: {
+    '^@actions/cache$': '<rootDir>/src/__tests__/mocks/actions-cache.ts',
     '^@actions/core$': '<rootDir>/src/__tests__/mocks/actions-core.ts',
     '^@actions/exec$': '<rootDir>/src/__tests__/mocks/actions-exec.ts',
   },

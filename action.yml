@@ -50,6 +50,12 @@ inputs:
     description: Additional uv pip install arguments (e.g., extra packages)
     required: false
     default: ''
+  cache:
+    description: >-
+      Enable caching of installed LiteLLM and its dependencies
+      to speed up subsequent runs.
+    required: false
+    default: 'true'
 outputs:
   base-url:
     description: Base URL of the running LiteLLM proxy server

@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
+import { restoreLitellmCache, saveLitellmCache } from './cache';
 import { waitForReady } from './wait-for-ready';
 
 export async function run(): Promise<void> {
@@ -19,51 +20,71 @@ export async function run(): Promise<void> {
     const timeout = parseInt(core.getInput('timeout') || '120', 10);
     const extraArgs = core.getInput('extra-args');
     const pipInstallArgs = core.getInput('pip-install-args');
+    const cacheEnabled = core.getInput('cache') !== 'false';
     const isWindows = os.platform() === 'win32';
 
-    // Install uv if not already available
-    core.startGroup('Install uv');
-    let uvFound = false;
-    try {
-      uvFound =
-        (await exec.exec('uv', ['--version'], {
-          ignoreReturnCode: true,
-          silent: true,
-        })) === 0;
-    } catch {
-      uvFound = false;
+    const uvBinDir = path.join(os.homedir(), '.local', 'bin');
+
+    // Try to restore from cache
+    let cacheHit = false;
+    if (cacheEnabled) {
+      core.startGroup('Restore LiteLLM cache');
+      cacheHit = await restoreLitellmCache(version, pipInstallArgs);
+      core.endGroup();
     }
-    if (!uvFound) {
-      if (isWindows) {
-        await exec.exec('powershell', [
-          '-ExecutionPolicy',
-          'ByPass',
-          '-c',
-          'irm https://astral.sh/uv/install.ps1 | iex',
-        ]);
-      } else {
-        await exec.exec('sh', [
-          '-c',
-          'curl -LsSf https://astral.sh/uv/install.sh | sh',
-        ]);
+
+    if (!cacheHit) {
+      // Install uv if not already available
+      core.startGroup('Install uv');
+      let uvFound = false;
+      try {
+        uvFound =
+          (await exec.exec('uv', ['--version'], {
+            ignoreReturnCode: true,
+            silent: true,
+          })) === 0;
+      } catch {
+        uvFound = false;
+      }
+      if (!uvFound) {
+        if (isWindows) {
+          await exec.exec('powershell', [
+            '-ExecutionPolicy',
+            'ByPass',
+            '-c',
+            'irm https://astral.sh/uv/install.ps1 | iex',
+          ]);
+        } else {
+          await exec.exec('sh', [
+            '-c',
+            'curl -LsSf https://astral.sh/uv/install.sh | sh',
+          ]);
+        }
+      }
+      core.endGroup();
+
+      // Install litellm
+      core.startGroup('Install LiteLLM');
+      const litellmPackage = version
+        ? `litellm[proxy]==${version}`
+        : 'litellm[proxy]';
+      const uvArgs = ['tool', 'install', litellmPackage];
+      if (pipInstallArgs) {
+        uvArgs.push(...pipInstallArgs.split(/\s+/).filter(Boolean));
+      }
+      await exec.exec('uv', uvArgs);
+      core.endGroup();
+
+      // Save to cache
+      if (cacheEnabled) {
+        core.startGroup('Save LiteLLM cache');
+        await saveLitellmCache(version, pipInstallArgs);
+        core.endGroup();
       }
     }
-    const uvBinDir = path.join(os.homedir(), '.local', 'bin');
+
     core.addPath(uvBinDir);
     process.env.PATH = `${uvBinDir}${path.delimiter}${process.env.PATH ?? ''}`;
-    core.endGroup();
-
-    // Install litellm
-    core.startGroup('Install LiteLLM');
-    const litellmPackage = version
-      ? `litellm[proxy]==${version}`
-      : 'litellm[proxy]';
-    const uvArgs = ['tool', 'install', litellmPackage];
-    if (pipInstallArgs) {
-      uvArgs.push(...pipInstallArgs.split(/\s+/).filter(Boolean));
-    }
-    await exec.exec('uv', uvArgs);
-    core.endGroup();
 
     // Determine config file path
     let resolvedConfigPath = configPath;
