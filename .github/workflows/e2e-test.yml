@@ -65,24 +65,23 @@ jobs:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: |
           response_file="${RUNNER_TEMP}/openrouter-completion-with-model.json"
-          curl -sf --retry 3 --retry-delay 5 --retry-all-errors \
-            "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
-            -H "Content-Type: application/json" \
-            -d @- > "${response_file}" <<'JSON'
-          {
-            "model": "openrouter/openrouter/free",
-            "messages": [
-              {
-                "role": "user",
-                "content": "Reply with exactly: ok"
-              }
-            ],
-            "temperature": 0,
-            "max_tokens": 16
-          }
-          JSON
-          jq . "${response_file}"
-          jq -er '.choices[0].message.content' "${response_file}" >/dev/null
+          request_body='{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
+          for attempt in 1 2 3; do
+            if curl -sf \
+              "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+              -H "Content-Type: application/json" \
+              -d "${request_body}" \
+              > "${response_file}" \
+              && jq . "${response_file}" \
+              && jq -er '.choices[0].message.content' "${response_file}" >/dev/null; then
+              break
+            elif [[ ${attempt} -lt 3 ]]; then
+              echo "Attempt ${attempt} failed; retrying in 10s..."
+              sleep 10
+            else
+              exit 1
+            fi
+          done
       - name: Skip OpenRouter completion test without secret
         if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
         run: >
@@ -153,24 +152,23 @@ jobs:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: |
           response_file="${RUNNER_TEMP}/openrouter-completion-with-config.json"
-          curl -sf --retry 3 --retry-delay 5 --retry-all-errors \
-            "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
-            -H "Content-Type: application/json" \
-            -d @- > "${response_file}" <<'JSON'
-          {
-            "model": "openrouter-free",
-            "messages": [
-              {
-                "role": "user",
-                "content": "Reply with exactly: ok"
-              }
-            ],
-            "temperature": 0,
-            "max_tokens": 16
-          }
-          JSON
-          jq . "${response_file}"
-          jq -er '.choices[0].message.content' "${response_file}" >/dev/null
+          request_body='{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
+          for attempt in 1 2 3; do
+            if curl -sf \
+              "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+              -H "Content-Type: application/json" \
+              -d "${request_body}" \
+              > "${response_file}" \
+              && jq . "${response_file}" \
+              && jq -er '.choices[0].message.content' "${response_file}" >/dev/null; then
+              break
+            elif [[ ${attempt} -lt 3 ]]; then
+              echo "Attempt ${attempt} failed; retrying in 10s..."
+              sleep 10
+            else
+              exit 1
+            fi
+          done
       - name: Skip OpenRouter completion test without secret
         if: ${{ env.OPENROUTER_API_KEY == 'sk-or-v1-dummy' }}
         run: >
