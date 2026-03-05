@@ -73,11 +73,11 @@ jobs:
         run: |
           delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
-            response=$(curl -sf \
+            if response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${REQUEST_BODY}")
-            if jq . <<<"${response}" \
+              -d "${REQUEST_BODY}") \
+              && jq . <<<"${response}" \
               && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
             elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
@@ -161,11 +161,11 @@ jobs:
         run: |
           delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
-            response=$(curl -sf \
+            if response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${REQUEST_BODY}")
-            if jq . <<<"${response}" \
+              -d "${REQUEST_BODY}") \
+              && jq . <<<"${response}" \
               && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
             elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
