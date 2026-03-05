@@ -17,7 +17,6 @@ export async function run(): Promise<void> {
     const logLevel = core.getInput('log-level') || 'INFO';
     const apiKey = core.getInput('api-key');
     const timeout = parseInt(core.getInput('timeout') || '120', 10);
-    const maxAttempts = parseInt(core.getInput('max-attempts') || '5', 10);
     const extraArgs = core.getInput('extra-args');
     const pipInstallArgs = core.getInput('pip-install-args');
     const isWindows = os.platform() === 'win32';
@@ -132,7 +131,7 @@ export async function run(): Promise<void> {
     // Wait for the server to be ready
     const baseUrl = `http://localhost:${port}`;
     core.startGroup('Waiting for LiteLLM proxy to be ready');
-    await waitForReady(baseUrl, timeout, maxAttempts);
+    await waitForReady(baseUrl, timeout);
     core.endGroup();
 
     // Set outputs

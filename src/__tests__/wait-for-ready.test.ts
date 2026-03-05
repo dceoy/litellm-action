@@ -80,10 +80,10 @@ describe('waitForReady', () => {
   it('should return immediately when health check returns 200', async () => {
     mockHttpSuccess(200);
 
-    await waitForReady('http://localhost:4000', 10, 5);
+    await waitForReady('http://localhost:4000', 10);
 
     expect(core.info).toHaveBeenCalledWith(
-      'Polling http://localhost:4000/health/readiness (timeout: 10s, max-attempts: 5)...',
+      'Polling http://localhost:4000/health/readiness (timeout: 10s)...',
     );
   });
 
@@ -91,7 +91,7 @@ describe('waitForReady', () => {
     mockHttpSuccess(500);
     mockHttpSuccess(200);
 
-    const promise = waitForReady('http://localhost:4000', 30, 5);
+    const promise = waitForReady('http://localhost:4000', 30);
     await jest.advanceTimersByTimeAsync(2000);
     await promise;
 
@@ -104,7 +104,7 @@ describe('waitForReady', () => {
     mockHttpError();
     mockHttpSuccess(200);
 
-    const promise = waitForReady('http://localhost:4000', 30, 5);
+    const promise = waitForReady('http://localhost:4000', 30);
     await jest.advanceTimersByTimeAsync(2000);
     await promise;
 
@@ -128,7 +128,7 @@ describe('waitForReady', () => {
       return req;
     });
 
-    const promise = waitForReady('http://localhost:4000', 2, 100);
+    const promise = waitForReady('http://localhost:4000', 2);
     const rejection = expect(promise).rejects.toThrow(
       'LiteLLM proxy did not become ready within 2 seconds',
     );
@@ -136,23 +136,11 @@ describe('waitForReady', () => {
     await rejection;
   });
 
-  it('should throw when max attempts are exhausted', async () => {
-    mockHttpError();
-    mockHttpError();
-
-    const promise = waitForReady('http://localhost:4000', 120, 2);
-    const rejection = expect(promise).rejects.toThrow(
-      'LiteLLM proxy did not become ready within 120 seconds',
-    );
-    await jest.advanceTimersByTimeAsync(2000);
-    await rejection;
-  });
-
   it('should handle request timeout in checkHealth', async () => {
     mockHttpTimeout();
     mockHttpSuccess(200);
 
-    const promise = waitForReady('http://localhost:4000', 30, 5);
+    const promise = waitForReady('http://localhost:4000', 30);
     await jest.advanceTimersByTimeAsync(2000);
     await promise;
 

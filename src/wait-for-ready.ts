@@ -4,19 +4,16 @@ import * as http from 'http';
 export async function waitForReady(
   baseUrl: string,
   timeoutSeconds: number,
-  maxAttempts: number,
 ): Promise<void> {
   const startTime = Date.now();
   const timeoutMs = timeoutSeconds * 1000;
   const pollIntervalMs = 2000;
-  let attempts = 0;
 
   core.info(
-    `Polling ${baseUrl}/health/readiness (timeout: ${timeoutSeconds}s, max-attempts: ${maxAttempts})...`,
+    `Polling ${baseUrl}/health/readiness (timeout: ${timeoutSeconds}s)...`,
   );
 
-  while (Date.now() - startTime < timeoutMs && attempts < maxAttempts) {
-    attempts++;
+  while (Date.now() - startTime < timeoutMs) {
     try {
       const healthy = await checkHealth(baseUrl);
       if (healthy) {
@@ -27,9 +24,7 @@ export async function waitForReady(
       core.debug('Health check connection failed, retrying...');
     }
 
-    if (attempts < maxAttempts) {
-      await sleep(pollIntervalMs);
-    }
+    await sleep(pollIntervalMs);
   }
 
   throw new Error(

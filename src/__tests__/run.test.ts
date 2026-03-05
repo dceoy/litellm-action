@@ -62,7 +62,6 @@ function setupDefaultInputs(overrides: Record<string, string> = {}): void {
     'log-level': '',
     'api-key': '',
     timeout: '',
-    'max-attempts': '',
     'extra-args': '',
     'pip-install-args': '',
     ...overrides,
@@ -329,19 +328,6 @@ describe('run', () => {
     expect(waitForReadyMod.waitForReady).toHaveBeenCalledWith(
       'http://localhost:4000',
       60,
-      5,
-    );
-  });
-
-  it('should use custom max-attempts', async () => {
-    setupDefaultInputs({ 'max-attempts': '3' });
-
-    await run();
-
-    expect(waitForReadyMod.waitForReady).toHaveBeenCalledWith(
-      'http://localhost:4000',
-      120,
-      3,
     );
   });
 
