@@ -73,18 +73,24 @@ jobs:
         run: |
           delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
-            if response=$(curl -sf \
+            echo "--- Attempt ${attempt}/${MAX_ATTEMPTS} ---"
+            if response=$(curl -sS \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${REQUEST_BODY}") \
-              && jq . <<<"${response}" \
-              && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
-              break
-            elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
+              -d "${REQUEST_BODY}" 2>&1); then
+              jq . <<<"${response}" || echo "${response}"
+              if jq -er '.choices[0].message.content' <<<"${response}" >/dev/null 2>&1; then
+                break
+              fi
+            else
+              echo "${response}"
+            fi
+            if [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
               echo "Attempt ${attempt} failed; retrying in ${delay}s..."
               sleep "${delay}"
               delay=$((delay * 2))
             else
+              echo "All ${MAX_ATTEMPTS} attempts failed."
               exit 1
             fi
           done
@@ -161,18 +167,24 @@ jobs:
         run: |
           delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
-            if response=$(curl -sf \
+            echo "--- Attempt ${attempt}/${MAX_ATTEMPTS} ---"
+            if response=$(curl -sS \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
               -H "Content-Type: application/json" \
-              -d "${REQUEST_BODY}") \
-              && jq . <<<"${response}" \
-              && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
-              break
-            elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
+              -d "${REQUEST_BODY}" 2>&1); then
+              jq . <<<"${response}" || echo "${response}"
+              if jq -er '.choices[0].message.content' <<<"${response}" >/dev/null 2>&1; then
+                break
+              fi
+            else
+              echo "${response}"
+            fi
+            if [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
               echo "Attempt ${attempt} failed; retrying in ${delay}s..."
               sleep "${delay}"
               delay=$((delay * 2))
             else
+              echo "All ${MAX_ATTEMPTS} attempts failed."
               exit 1
             fi
           done
