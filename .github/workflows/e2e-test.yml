@@ -71,6 +71,7 @@ jobs:
           MAX_ATTEMPTS: ${{ inputs.max-attempts }}
           REQUEST_BODY: '{"model":"openrouter/openrouter/free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
         run: |
+          delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
             response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
@@ -80,8 +81,9 @@ jobs:
               && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
             elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
-              echo "Attempt ${attempt} failed; retrying in 10s..."
-              sleep 10
+              echo "Attempt ${attempt} failed; retrying in ${delay}s..."
+              sleep "${delay}"
+              delay=$((delay * 2))
             else
               exit 1
             fi
@@ -157,6 +159,7 @@ jobs:
           MAX_ATTEMPTS: ${{ inputs.max-attempts }}
           REQUEST_BODY: '{"model":"openrouter-free","messages":[{"role":"user","content":"Reply with exactly: ok"}],"temperature":0,"max_tokens":16}'
         run: |
+          delay=10
           for attempt in $(seq 1 "${MAX_ATTEMPTS}"); do
             response=$(curl -sf \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
@@ -166,8 +169,9 @@ jobs:
               && jq -er '.choices[0].message.content' <<<"${response}" >/dev/null; then
               break
             elif [[ ${attempt} -lt ${MAX_ATTEMPTS} ]]; then
-              echo "Attempt ${attempt} failed; retrying in 10s..."
-              sleep 10
+              echo "Attempt ${attempt} failed; retrying in ${delay}s..."
+              sleep "${delay}"
+              delay=$((delay * 2))
             else
               exit 1
             fi
