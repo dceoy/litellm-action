@@ -25,6 +25,9 @@ on:
   pull_request_review:
     types:
       - submitted
+  release:
+    types:
+      - released
   workflow_dispatch:  # checkov:skip=CKV_GHA_7:workflow_dispatch inputs are required for manual runs
     inputs:
       workflow:
@@ -125,6 +128,13 @@ jobs:
     with:
       language: >
         ["javascript"]
+  github-major-version-tag:
+    if: >
+      (github.event_name == 'release' && github.event.action == 'released')
+      || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    uses: dceoy/gh-actions-for-devops/.github/workflows/github-major-version-tag.yml@main  # zizmor: ignore[unpinned-uses]
   build-and-update-dist:
     if: >
       github.event_name == 'push'
