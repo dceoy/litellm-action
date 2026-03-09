@@ -32,7 +32,7 @@ jobs:
       github.event_name == 'pull_request'
     runs-on: ${{ inputs.runs-on }}
     env:
-      CLAUDE_CODE_ACTION: dceoy/claude-code-action@4bbcb2437b8e9d79036d8c1d58062436ae0c9bd6  # v1.0.70
+      CLAUDE_CODE_ACTION: dceoy/claude-code-action@main
       LITELLM_MASTER_KEY: sk-litellm
     steps:
       - name: Checkout repository
@@ -44,29 +44,36 @@ jobs:
       - name: Set environment variables
         run: >
           {
+            claude_code_action_ref="${CLAUDE_CODE_ACTION##*@}";
             echo "CLAUDE_CODE_ACTION_REPOSITORY=${CLAUDE_CODE_ACTION%@*}";
-            echo "CLAUDE_CODE_ACTION_SHA=${CLAUDE_CODE_ACTION##*@}";
+            echo "CLAUDE_CODE_ACTION_REF=${claude_code_action_ref}";
+            if [[ "${claude_code_action_ref}" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "CLAUDE_CODE_ACTION_IS_IMMUTABLE=true";
+            else
+              echo "CLAUDE_CODE_ACTION_IS_IMMUTABLE=false";
+            fi;
             echo "CLAUDE_CODE_ACTION_CACHE_DIR=${RUNNER_TEMP}/claude-code-action-cache";
           } >> "${GITHUB_ENV}"
       - name: Cache Claude Code Action assets
+        if: env.CLAUDE_CODE_ACTION_IS_IMMUTABLE == 'true'
         id: claude-code-action-cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
         with:
           path: ${{ env.RUNNER_TEMP }}/claude-code-action-cache
-          key: claude-code-action-${{ env.CLAUDE_CODE_ACTION_SHA }}
+          key: claude-code-action-${{ env.CLAUDE_CODE_ACTION_REF }}
       - name: Download Claude Code Action (if not cached)
-        if: (! steps.claude-code-action-cache.outputs.cache-hit)
+        if: env.CLAUDE_CODE_ACTION_IS_IMMUTABLE != 'true' || (! steps.claude-code-action-cache.outputs.cache-hit)
         run: |
           mkdir -p "${CLAUDE_CODE_ACTION_CACHE_DIR}"
           curl -fsSL \
-            -o "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_SHA}.tar.gz" \
-            "https://github.com/${CLAUDE_CODE_ACTION_REPOSITORY}/archive/${CLAUDE_CODE_ACTION_SHA}.tar.gz"
+            -o "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_REF}.tar.gz" \
+            "https://github.com/${CLAUDE_CODE_ACTION_REPOSITORY}/archive/${CLAUDE_CODE_ACTION_REF}.tar.gz"
       - name: Extract and install agents and commands from Claude Code Action
         run: |
           [[ -d .claude ]] || mkdir -p .claude
-          tar -xzf "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_SHA}.tar.gz" -C "${RUNNER_TEMP}/"
-          rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_SHA}/.claude/agents/" .claude/agents/
-          rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_SHA}/.claude/commands/" .claude/commands/
+          tar -xzf "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_REF}.tar.gz" -C "${RUNNER_TEMP}/"
+          rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_REF}/.claude/agents/" .claude/agents/
+          rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_REF}/.claude/commands/" .claude/commands/
           [[ -f .claude/commands/review-pr.md ]] || exit 1
       - name: Start LiteLLM proxy server
         id: litellm-proxy
@@ -102,7 +109,7 @@ jobs:
                 - ll-sonnet:
                     - ll-haiku
       - name: Run PR review with Claude Code
-        uses: dceoy/claude-code-action@4bbcb2437b8e9d79036d8c1d58062436ae0c9bd6  # v1.0.70
+        uses: dceoy/claude-code-action@main  # zizmor: ignore[unpinned-uses]
         env:
           ANTHROPIC_BASE_URL: ${{ steps.litellm-proxy.outputs.base-url }}
           ANTHROPIC_DEFAULT_OPUS_MODEL: ll-opus
