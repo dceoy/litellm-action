@@ -80,43 +80,43 @@ jobs:
     uses: ./.github/workflows/e2e-test.yml
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-  # claude-code-review:
-  #   if: >
-  #     github.event_name == 'pull_request'
-  #     && github.event.pull_request.draft == false
-  #     && (github.event.action == 'opened' || github.event.action == 'ready_for_review')
-  #     && (! startsWith(github.head_ref, 'dependabot/'))
-  #     && (! startsWith(github.head_ref, 'renovate/'))
-  #     && (! (failure() || cancelled()))
-  #   needs:
-  #     - typescript-lint-and-test
-  #     - github-actions-lint-and-scan
-  #   permissions:
-  #     contents: read
-  #     pull-requests: write
-  #     issues: write
-  #     id-token: write
-  #     actions: read
-  #   uses: ./.github/workflows/claude-code-review.yml
-  #   secrets:
-  #     GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # claude-code-bot:
-  #   if: >
-  #     (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
-  #     || (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
-  #     || (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
-  #     || (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
-  #   permissions:
-  #     contents: read
-  #     pull-requests: write
-  #     issues: write
-  #     id-token: write
-  #     actions: read
-  #   uses: ./.github/workflows/claude-code-bot.yml
-  #   secrets:
-  #     GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  claude-code-review:
+    if: >
+      github.event_name == 'pull_request'
+      && github.event.pull_request.draft == false
+      && (github.event.action == 'opened' || github.event.action == 'ready_for_review')
+      && (! startsWith(github.head_ref, 'dependabot/'))
+      && (! startsWith(github.head_ref, 'renovate/'))
+      && (! (failure() || cancelled()))
+    needs:
+      - typescript-lint-and-test
+      - github-actions-lint-and-scan
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    uses: ./.github/workflows/claude-code-review.yml
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  claude-code-bot:
+    if: >
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
+      || (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
+      || (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
+      || (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    uses: ./.github/workflows/claude-code-bot.yml
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   github-codeql-analysis:
     if: >
       github.event_name == 'push'
