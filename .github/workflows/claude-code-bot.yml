@@ -79,7 +79,7 @@ jobs:
                 - ll-sonnet:
                     - ll-haiku
       - name: Run Claude Code
-        uses: dceoy/claude-code-action@4bbcb2437b8e9d79036d8c1d58062436ae0c9bd6  # v1.0.70
+        uses: dceoy/claude-code-action@main  # zizmor: ignore[unpinned-uses]
         env:
           ANTHROPIC_BASE_URL: ${{ steps.litellm-proxy.outputs.base-url }}
           ANTHROPIC_DEFAULT_OPUS_MODEL: ll-opus
