@@ -118,6 +118,7 @@ jobs:
         with:
           claude_code_oauth_token: ''
           anthropic_auth_token: ${{ env.LITELLM_MASTER_KEY }}
+          github_token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
           prompt: >-
             /review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}
           claude_args: ${{ inputs.claude-args }}
