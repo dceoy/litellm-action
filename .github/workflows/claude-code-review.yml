@@ -45,7 +45,7 @@ jobs:
         run: >
           {
             echo "CLAUDE_CODE_ACTION_REPOSITORY=${CLAUDE_CODE_ACTION%@*}";
-            echo "CLAUDE_CODE_ACTION_REF=${CLAUDE_CODE_ACTION##*@}";
+            echo "CLAUDE_CODE_ACTION_SHA=${CLAUDE_CODE_ACTION##*@}";
             echo "CLAUDE_CODE_ACTION_CACHE_DIR=${RUNNER_TEMP}/claude-code-action-cache";
           } >> "${GITHUB_ENV}"
       - name: Cache Claude Code Action assets
@@ -53,21 +53,20 @@ jobs:
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
         with:
           path: ${{ env.RUNNER_TEMP }}/claude-code-action-cache
-          key: claude-code-action-${{ env.CLAUDE_CODE_ACTION_REF }}
+          key: claude-code-action-${{ env.CLAUDE_CODE_ACTION_SHA }}
       - name: Download Claude Code Action (if not cached)
         if: (! steps.claude-code-action-cache.outputs.cache-hit)
         run: |
           mkdir -p "${CLAUDE_CODE_ACTION_CACHE_DIR}"
           curl -fsSL \
-            -o "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_REF}.tar.gz" \
-            "https://github.com/${CLAUDE_CODE_ACTION_REPOSITORY}/archive/${CLAUDE_CODE_ACTION_REF}.tar.gz"
+            -o "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_SHA}.tar.gz" \
+            "https://github.com/${CLAUDE_CODE_ACTION_REPOSITORY}/archive/${CLAUDE_CODE_ACTION_SHA}.tar.gz"
       - name: Extract and install agents and commands from Claude Code Action
         run: |
-          archive_dir="${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_REF#v}"
           [[ -d .claude ]] || mkdir -p .claude
-          tar -xzf "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_REF}.tar.gz" -C "${RUNNER_TEMP}/"
-          rsync -av "${archive_dir}/.claude/agents/" .claude/agents/
-          rsync -av "${archive_dir}/.claude/commands/" .claude/commands/
+          tar -xzf "${CLAUDE_CODE_ACTION_CACHE_DIR}/${CLAUDE_CODE_ACTION_SHA}.tar.gz" -C "${RUNNER_TEMP}/"
+          rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_SHA}/.claude/agents/" .claude/agents/
+          rsync -av "${RUNNER_TEMP}/claude-code-action-${CLAUDE_CODE_ACTION_SHA}/.claude/commands/" .claude/commands/
           [[ -f .claude/commands/review-pr.md ]] || exit 1
       - name: Start LiteLLM proxy server
         id: litellm-proxy
@@ -111,7 +110,7 @@ jobs:
           ANTHROPIC_DEFAULT_HAIKU_MODEL: ll-haiku
         with:
           claude_code_oauth_token: ''
-          anthropic_api_key: ${{ env.LITELLM_MASTER_KEY }}
+          anthropic_auth_token: ${{ env.LITELLM_MASTER_KEY }}
           prompt: >-
             /review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}
           claude_args: ${{ inputs.claude-args }}

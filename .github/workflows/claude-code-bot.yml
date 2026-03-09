@@ -87,7 +87,7 @@ jobs:
           ANTHROPIC_DEFAULT_HAIKU_MODEL: ll-haiku
         with:
           claude_code_oauth_token: ''
-          anthropic_api_key: ${{ env.LITELLM_MASTER_KEY }}
+          anthropic_auth_token: ${{ env.LITELLM_MASTER_KEY }}
           github_token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
           additional_permissions: |
             actions: read   # This is an optional setting that allows Claude to read CI results on PRs
