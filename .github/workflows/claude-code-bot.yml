@@ -8,6 +8,11 @@ on:
         type: string
         description: Additional arguments to pass directly to Claude Code Action
         default: '--allowed-tools "Bash(gh:*)",mcp__github_inline_comment__create_inline_comment'
+      model:
+        required: false
+        type: string
+        description: Gemini model to route Claude Code requests through LiteLLM
+        default: gemini/gemini-3-flash-preview
       runs-on:
         required: false
         type: string
@@ -50,9 +55,7 @@ jobs:
         uses: ./
         env:
           LITELLM_ANTHROPIC_DISABLE_NO_PROVIDER_ERROR: 'true'
-          LITELLM_GEMINI_OPUS_MODEL: gemini/gemini-3.1-pro-preview
-          LITELLM_GEMINI_SONNET_MODEL: gemini/gemini-3.1-pro-preview
-          LITELLM_GEMINI_HAIKU_MODEL: gemini/gemini-3.1-pro-preview
+          LITELLM_GEMINI_MODEL: ${{ inputs.model }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
           api-key: os.environ/LITELLM_MASTER_KEY
@@ -60,15 +63,15 @@ jobs:
             model_list:
               - model_name: ll-opus
                 litellm_params:
-                  model: os.environ/LITELLM_GEMINI_OPUS_MODEL
+                  model: os.environ/LITELLM_GEMINI_MODEL
                   api_key: os.environ/GEMINI_API_KEY
               - model_name: ll-sonnet
                 litellm_params:
-                  model: os.environ/LITELLM_GEMINI_SONNET_MODEL
+                  model: os.environ/LITELLM_GEMINI_MODEL
                   api_key: os.environ/GEMINI_API_KEY
               - model_name: ll-haiku
                 litellm_params:
-                  model: os.environ/LITELLM_GEMINI_HAIKU_MODEL
+                  model: os.environ/LITELLM_GEMINI_MODEL
                   api_key: os.environ/GEMINI_API_KEY
             litellm_settings:
               drop_params: true
