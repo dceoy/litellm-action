@@ -8,8 +8,7 @@ const core = jest.requireMock('@actions/core') as {
   debug: jest.Mock;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpGet = http.get as any as jest.Mock;
+const httpGet = http.get as unknown as jest.Mock;
 
 import { waitForReady } from '../wait-for-ready';
 

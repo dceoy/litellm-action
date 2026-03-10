@@ -116,8 +116,12 @@ pnpm run test
 pnpm run build
 ```
 
-`dist/main` and `dist/post` are generated with `@vercel/ncc` and should stay in
-sync with source changes.
+`pnpm run format:check` uses Biome for the repository's JavaScript,
+TypeScript, and JSON files. `pnpm run lint` uses Oxlint for the JavaScript and
+TypeScript lint pass.
+
+`dist/main` and `dist/post` are generated with `@vercel/ncc` and should stay
+in sync with source changes.
 
 ## License
 
