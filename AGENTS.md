@@ -16,9 +16,9 @@
 ## Build, Test, and Development Commands
 
 - `pnpm install --frozen-lockfile`: install dependencies from `pnpm-lock.yaml`.
-- `pnpm run format`: format supported source/docs files with Prettier.
-- `pnpm run format:check`: verify formatting without changes.
-- `pnpm run lint`: run ESLint across the repository (configured ignores apply).
+- `pnpm run format`: format supported JavaScript, TypeScript, and JSON files with Biome.
+- `pnpm run format:check`: verify Biome formatting without changes.
+- `pnpm run lint`: run Oxlint across repository JavaScript and TypeScript files.
 - `pnpm run typecheck`: run `tsc --noEmit` with strict checks.
 - `pnpm run test`: execute Jest unit tests with coverage.
 - `pnpm run build`: bundle `src/main.ts` and `src/post.ts` to `dist/`.
@@ -27,7 +27,7 @@
 ## Coding Style & Naming Conventions
 
 - Use TypeScript strict mode conventions from `tsconfig.json` (`strict`, no unused locals/params).
-- Follow Prettier config: 2 spaces, single quotes, semicolons, trailing commas, 80-char width.
+- Follow the Biome formatter config: 2 spaces, single quotes, semicolons, trailing commas, 80-char width.
 - Use `camelCase` for variables/functions and clear verb-based function names (e.g., `waitForReady`).
 - Keep responsibilities split: startup in `main.ts`, teardown in `post.ts`, reusable logic in helpers.
 

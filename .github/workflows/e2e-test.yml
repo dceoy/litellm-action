@@ -27,7 +27,7 @@ jobs:
   e2e-test-with-model:
     runs-on: ${{ inputs.runs-on }}
     env:
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}   # zizmor: ignore[secrets-outside-env]
       OPENROUTER_SITE_URL: https://github.com/${{ github.repository }}
       OPENROUTER_APP_NAME: litellm-action-e2e-test
     steps:
@@ -113,7 +113,7 @@ jobs:
   e2e-test-with-config:
     runs-on: ${{ inputs.runs-on }}
     env:
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}   # zizmor: ignore[secrets-outside-env]
       OPENROUTER_SITE_URL: https://github.com/${{ github.repository }}
       OPENROUTER_APP_NAME: litellm-action-e2e-test
     steps:

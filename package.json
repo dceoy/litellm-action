@@ -9,10 +9,10 @@
     "build:prep": "tsc -p tsconfig.build.json",
     "build:main": "ncc build lib/main.js -o dist/main --source-map --license licenses.txt && node scripts/prepend-license.js dist/main/licenses.txt",
     "build:post": "ncc build lib/post.js -o dist/post --source-map --license licenses.txt && node scripts/prepend-license.js dist/post/licenses.txt",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern .",
-    "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern .",
-    "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,html,md}'",
-    "format:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,css,scss,html,md}'",
+    "lint": "oxlint --jest-plugin --node-plugin .",
+    "lint:fix": "oxlint --jest-plugin --node-plugin --fix .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
     "test": "jest --coverage",
     "audit": "pnpm audit",
@@ -36,16 +36,13 @@
     "@actions/exec": "^3.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.0.0",
+    "@biomejs/biome": "^2.4.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.3.3",
     "@vercel/ncc": "^0.38.0",
-    "eslint": "^10.0.2",
-    "eslint-config-prettier": "^10.0.0",
     "jest": "^30.2.0",
-    "prettier": "^3.0.0",
+    "oxlint": "^1.52.0",
     "ts-jest": "^29.0.0",
-    "typescript": "^5.7.0",
-    "typescript-eslint": "^8.0.0"
+    "typescript": "^5.7.0"
   }
 }
