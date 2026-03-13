@@ -184,8 +184,8 @@ jobs:
       - name: Commit and push the changes
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
         with:
-          add: ./dist
-          message: Update the dist files
+          add: ./dist package.json pnpm-lock.yaml
+          message: Update dist and dependency files
           push: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
   dependabot-auto-merge:
