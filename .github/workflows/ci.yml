@@ -11,20 +11,6 @@ on:
       - opened
       - synchronize
       - reopened
-      - ready_for_review
-  issue_comment:
-    types:
-      - created
-  pull_request_review_comment:
-    types:
-      - created
-  issues:
-    types:
-      - opened
-      - assigned
-  pull_request_review:
-    types:
-      - submitted
   release:
     types:
       - released
@@ -48,7 +34,7 @@ jobs:
   typescript-lint-and-test:
     if: >
       github.event_name == 'push'
-      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || github.event_name == 'pull_request'
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
@@ -61,7 +47,7 @@ jobs:
   github-actions-lint-and-scan:
     if: >
       github.event_name == 'push'
-      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || github.event_name == 'pull_request'
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
@@ -73,50 +59,13 @@ jobs:
   github-actions-e2e-test:
     if: >
       github.event_name == 'push'
-      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || github.event_name == 'pull_request'
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
     uses: ./.github/workflows/e2e-test.yml
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-  claude-code-review:
-    if: >
-      github.event_name == 'pull_request'
-      && github.event.pull_request.draft == false
-      && (github.event.action == 'opened' || github.event.action == 'ready_for_review')
-      && (! startsWith(github.head_ref, 'dependabot/'))
-      && (! startsWith(github.head_ref, 'renovate/'))
-      && (! (failure() || cancelled()))
-    needs:
-      - typescript-lint-and-test
-      - github-actions-lint-and-scan
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
-      id-token: write
-      actions: read
-    uses: dceoy/gh-actions-for-devops/.github/workflows/claude-code-review.yml@main  # zizmor: ignore[unpinned-uses]
-    secrets:
-      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}   # zizmor: ignore[secrets-outside-env]
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  claude-code-bot:
-    if: >
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
-      || (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
-      || (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude'))
-      || (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
-      id-token: write
-      actions: read
-    uses: dceoy/gh-actions-for-devops/.github/workflows/claude-code-bot.yml@main  # zizmor: ignore[unpinned-uses]
-    secrets:
-      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}   # zizmor: ignore[secrets-outside-env]
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   github-codeql-analysis:
     if: >
       github.event_name == 'push'
@@ -138,7 +87,7 @@ jobs:
   build-and-update-dist:
     if: >
       github.event_name == 'push'
-      || (github.event_name == 'pull_request' && github.event.action != 'ready_for_review')
+      || github.event_name == 'pull_request'
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'update')
     needs:
       - typescript-lint-and-test
@@ -184,7 +133,7 @@ jobs:
       - name: Commit and push the changes
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
         with:
-          add: ./dist package.json pnpm-lock.yaml
+          add: ./dist ./package.json ./pnpm-lock.yaml
           message: Update dist and dependency files
           push: true
           github_token: ${{ secrets.GITHUB_TOKEN }}

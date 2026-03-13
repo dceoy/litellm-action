@@ -1,0 +1,6 @@
+---
+name: Repository CodeQL config
+
+# `dist/` contains generated ncc bundles and vendored third-party runtime code.
+paths-ignore:
+  - dist/**
