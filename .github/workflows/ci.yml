@@ -163,12 +163,24 @@ jobs:
       - name: Install dependencies
         run: >
           pnpm install --frozen-lockfile
+      - name: Apply audit fixes
+        run: >
+          pnpm run audit:fix
       - name: Build the project
         run: >
           pnpm run build
-      - name: Format and lint the generated files
+      - name: Format the generated files
         run: >
-          pnpm format && pnpm lint:fix
+          pnpm format
+      - name: Lint the generated files
+        run: >
+          pnpm lint:fix
+      - name: Run type checks
+        run: >
+          pnpm run typecheck
+      - name: Run tests
+        run: >
+          pnpm run test
       - name: Commit and push the changes
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
         with:
