@@ -1,0 +1,4 @@
+# Suppress false positives from the well-known Azurite emulator test credential
+# (devstoreaccount1 / AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ...)
+# bundled in @actions/cache's Azure SDK dependency.
+azure-storage-account-key
