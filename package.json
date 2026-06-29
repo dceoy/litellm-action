@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --coverage",
     "audit": "pnpm audit",
-    "audit:fix": "pnpm audit --fix",
+    "audit:fix": "pnpm audit --fix=override",
     "all": "pnpm run format && pnpm run lint:fix && pnpm run typecheck && pnpm run audit:fix && pnpm run test && pnpm run build"
   },
   "repository": {

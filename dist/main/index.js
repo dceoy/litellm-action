@@ -5268,7 +5268,7 @@ function range(a, b, str) {
 
 /***/ }),
 
-/***/ 3033:
+/***/ 9884:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var balanced = __nccwpck_require__(870);
@@ -5421,7 +5421,7 @@ function expand(str, isTop) {
       var y = numeric(n[1]);
       var width = Math.max(n[0].length, n[1].length)
       var incr = n.length == 3
-        ? Math.abs(numeric(n[2]))
+        ? Math.max(Math.abs(numeric(n[2])), 1)
         : 1;
       var test = lte;
       var reverse = y < x;
@@ -5473,7 +5473,6 @@ function expand(str, isTop) {
 
   return expansions;
 }
-
 
 
 /***/ }),
@@ -6821,7 +6820,7 @@ var path = (function () { try { return __nccwpck_require__(6928) } catch (e) {}}
 minimatch.sep = path.sep
 
 var GLOBSTAR = minimatch.GLOBSTAR = Minimatch.GLOBSTAR = {}
-var expand = __nccwpck_require__(3033)
+var expand = __nccwpck_require__(9884)
 
 var plTypes = {
   '!': { open: '(?:(?!(?:', close: '))[^/]*?)'},
