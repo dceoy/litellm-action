@@ -27,7 +27,7 @@ importers:
     dependencies:
       '@actions/cache':
         specifier: ^6.2.0
-        version: 6.2.0
+        version: 6.2.0(supports-color@8.1.1)
       '@actions/core':
         specifier: ^3.0.1
         version: 3.0.1
@@ -49,13 +49,13 @@ importers:
         version: 0.38.4
       jest:
         specifier: ^30.4.2
-        version: 30.4.2(@types/node@26.2.0)
+        version: 30.4.2(@types/node@26.2.0)(supports-color@8.1.1)
       oxlint:
         specifier: ^1.56.0
         version: 1.56.0
       ts-jest:
         specifier: ^29.4.12
-        version: 29.4.12(@babel/core@8.0.1)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@8.0.1))(jest-util@30.4.1)(jest@30.4.2(@types/node@26.2.0))(typescript@5.9.3)
+        version: 29.4.12(@babel/core@8.0.1)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@8.0.1))(jest-util@30.4.1)(jest@30.4.2(@types/node@26.2.0)(supports-color@8.1.1))(typescript@5.9.3)
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
@@ -1818,15 +1818,15 @@ packages:
 
 snapshots:
 
-  '@actions/cache@6.2.0':
+  '@actions/cache@6.2.0(supports-color@8.1.1)':
     dependencies:
       '@actions/core': 3.0.1
       '@actions/exec': 3.0.0
       '@actions/glob': 0.6.1
       '@actions/http-client': 4.0.1
       '@actions/io': 3.0.2
-      '@azure/core-rest-pipeline': 1.25.0
-      '@azure/storage-blob': 12.33.0
+      '@azure/core-rest-pipeline': 1.25.0(supports-color@8.1.1)
+      '@azure/storage-blob': 12.33.0(supports-color@8.1.1)
       '@protobuf-ts/runtime-rpc': 2.11.1
       semver: 7.8.5
     transitivePeerDependencies:
@@ -1857,37 +1857,37 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@azure/core-auth@1.11.0':
+  '@azure/core-auth@1.11.0(supports-color@8.1.1)':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@azure/core-util': 1.14.0
+      '@azure/core-util': 1.14.0(supports-color@8.1.1)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/core-client@1.11.0':
+  '@azure/core-client@1.11.0(supports-color@8.1.1)':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@azure/core-auth': 1.11.0
-      '@azure/core-rest-pipeline': 1.25.0
+      '@azure/core-auth': 1.11.0(supports-color@8.1.1)
+      '@azure/core-rest-pipeline': 1.25.0(supports-color@8.1.1)
       '@azure/core-tracing': 1.4.0
-      '@azure/core-util': 1.14.0
-      '@azure/logger': 1.4.0
+      '@azure/core-util': 1.14.0(supports-color@8.1.1)
+      '@azure/logger': 1.4.0(supports-color@8.1.1)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/core-http-compat@2.5.0(@azure/core-client@1.11.0)(@azure/core-rest-pipeline@1.25.0)':
+  '@azure/core-http-compat@2.5.0(@azure/core-client@1.11.0(supports-color@8.1.1))(@azure/core-rest-pipeline@1.25.0(supports-color@8.1.1))':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@azure/core-client': 1.11.0
-      '@azure/core-rest-pipeline': 1.25.0
+      '@azure/core-client': 1.11.0(supports-color@8.1.1)
+      '@azure/core-rest-pipeline': 1.25.0(supports-color@8.1.1)
 
-  '@azure/core-lro@2.7.2':
+  '@azure/core-lro@2.7.2(supports-color@8.1.1)':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@azure/core-util': 1.14.0
-      '@azure/logger': 1.4.0
+      '@azure/core-util': 1.14.0(supports-color@8.1.1)
+      '@azure/logger': 1.4.0(supports-color@8.1.1)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -1896,14 +1896,14 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@azure/core-rest-pipeline@1.25.0':
+  '@azure/core-rest-pipeline@1.25.0(supports-color@8.1.1)':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@azure/core-auth': 1.11.0
+      '@azure/core-auth': 1.11.0(supports-color@8.1.1)
       '@azure/core-tracing': 1.4.0
-      '@azure/core-util': 1.14.0
-      '@azure/logger': 1.4.0
-      '@typespec/ts-http-runtime': 0.3.8
+      '@azure/core-util': 1.14.0(supports-color@8.1.1)
+      '@azure/logger': 1.4.0(supports-color@8.1.1)
+      '@typespec/ts-http-runtime': 0.3.8(supports-color@8.1.1)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -1912,10 +1912,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@azure/core-util@1.14.0':
+  '@azure/core-util@1.14.0(supports-color@8.1.1)':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@typespec/ts-http-runtime': 0.3.8
+      '@typespec/ts-http-runtime': 0.3.8(supports-color@8.1.1)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -1925,41 +1925,41 @@ snapshots:
       fast-xml-parser: 5.10.1
       tslib: 2.8.1
 
-  '@azure/logger@1.4.0':
+  '@azure/logger@1.4.0(supports-color@8.1.1)':
     dependencies:
-      '@typespec/ts-http-runtime': 0.3.8
+      '@typespec/ts-http-runtime': 0.3.8(supports-color@8.1.1)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/storage-blob@12.33.0':
+  '@azure/storage-blob@12.33.0(supports-color@8.1.1)':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@azure/core-auth': 1.11.0
-      '@azure/core-client': 1.11.0
-      '@azure/core-http-compat': 2.5.0(@azure/core-client@1.11.0)(@azure/core-rest-pipeline@1.25.0)
-      '@azure/core-lro': 2.7.2
+      '@azure/core-auth': 1.11.0(supports-color@8.1.1)
+      '@azure/core-client': 1.11.0(supports-color@8.1.1)
+      '@azure/core-http-compat': 2.5.0(@azure/core-client@1.11.0(supports-color@8.1.1))(@azure/core-rest-pipeline@1.25.0(supports-color@8.1.1))
+      '@azure/core-lro': 2.7.2(supports-color@8.1.1)
       '@azure/core-paging': 1.7.0
-      '@azure/core-rest-pipeline': 1.25.0
+      '@azure/core-rest-pipeline': 1.25.0(supports-color@8.1.1)
       '@azure/core-tracing': 1.4.0
-      '@azure/core-util': 1.14.0
+      '@azure/core-util': 1.14.0(supports-color@8.1.1)
       '@azure/core-xml': 1.6.0
-      '@azure/logger': 1.4.0
-      '@azure/storage-common': 12.5.0(@azure/core-client@1.11.0)
+      '@azure/logger': 1.4.0(supports-color@8.1.1)
+      '@azure/storage-common': 12.5.0(@azure/core-client@1.11.0(supports-color@8.1.1))(supports-color@8.1.1)
       events: 3.3.0
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/storage-common@12.5.0(@azure/core-client@1.11.0)':
+  '@azure/storage-common@12.5.0(@azure/core-client@1.11.0(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@azure/abort-controller': 2.2.0
-      '@azure/core-auth': 1.11.0
-      '@azure/core-http-compat': 2.5.0(@azure/core-client@1.11.0)(@azure/core-rest-pipeline@1.25.0)
-      '@azure/core-rest-pipeline': 1.25.0
+      '@azure/core-auth': 1.11.0(supports-color@8.1.1)
+      '@azure/core-http-compat': 2.5.0(@azure/core-client@1.11.0(supports-color@8.1.1))(@azure/core-rest-pipeline@1.25.0(supports-color@8.1.1))
+      '@azure/core-rest-pipeline': 1.25.0(supports-color@8.1.1)
       '@azure/core-tracing': 1.4.0
-      '@azure/core-util': 1.14.0
-      '@azure/logger': 1.4.0
+      '@azure/core-util': 1.14.0(supports-color@8.1.1)
+      '@azure/logger': 1.4.0(supports-color@8.1.1)
       events: 3.3.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -2250,11 +2250,11 @@ snapshots:
       jest-util: 30.4.1
       slash: 3.0.0
 
-  '@jest/core@30.4.2':
+  '@jest/core@30.4.2(supports-color@8.1.1)':
     dependencies:
       '@jest/console': 30.4.1
       '@jest/pattern': 30.4.0
-      '@jest/reporters': 30.4.1
+      '@jest/reporters': 30.4.1(supports-color@8.1.1)
       '@jest/test-result': 30.4.1
       '@jest/transform': 30.4.1
       '@jest/types': 30.4.1
@@ -2338,7 +2338,7 @@ snapshots:
       '@types/node': 26.2.0
       jest-regex-util: 30.4.0
 
-  '@jest/reporters@30.4.1':
+  '@jest/reporters@30.4.1(supports-color@8.1.1)':
     dependencies:
       '@bcoe/v8-coverage': 0.2.3
       '@jest/console': 30.4.1
@@ -2355,7 +2355,7 @@ snapshots:
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-instrument: 6.0.3
       istanbul-lib-report: 3.0.1
-      istanbul-lib-source-maps: 5.0.6
+      istanbul-lib-source-maps: 5.0.6(supports-color@8.1.1)
       istanbul-reports: 3.2.0
       jest-message-util: 30.4.1
       jest-util: 30.4.1
@@ -2596,10 +2596,10 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@typespec/ts-http-runtime@0.3.8':
+  '@typespec/ts-http-runtime@0.3.8(supports-color@8.1.1)':
     dependencies:
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      http-proxy-agent: 7.0.2(supports-color@8.1.1)
+      https-proxy-agent: 7.0.6(supports-color@8.1.1)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -2826,9 +2826,11 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  debug@4.4.3:
+  debug@4.4.3(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 8.1.1
 
   dedent@1.7.2: {}
 
@@ -2970,17 +2972,17 @@ snapshots:
 
   html-escaper@2.0.2: {}
 
-  http-proxy-agent@7.0.2:
+  http-proxy-agent@7.0.2(supports-color@8.1.1):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  https-proxy-agent@7.0.6:
+  https-proxy-agent@7.0.6(supports-color@8.1.1):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -3032,10 +3034,10 @@ snapshots:
       make-dir: 4.0.0
       supports-color: 7.2.0
 
-  istanbul-lib-source-maps@5.0.6:
+  istanbul-lib-source-maps@5.0.6(supports-color@8.1.1):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
     transitivePeerDependencies:
       - supports-color
@@ -3082,9 +3084,9 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  jest-cli@30.4.2(@types/node@26.2.0):
+  jest-cli@30.4.2(@types/node@26.2.0)(supports-color@8.1.1):
     dependencies:
-      '@jest/core': 30.4.2
+      '@jest/core': 30.4.2(supports-color@8.1.1)
       '@jest/test-result': 30.4.1
       '@jest/types': 30.4.1
       chalk: 4.1.2
@@ -3382,12 +3384,12 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jest@30.4.2(@types/node@26.2.0):
+  jest@30.4.2(@types/node@26.2.0)(supports-color@8.1.1):
     dependencies:
-      '@jest/core': 30.4.2
+      '@jest/core': 30.4.2(supports-color@8.1.1)
       '@jest/types': 30.4.1
       import-local: 3.2.0
-      jest-cli: 30.4.2(@types/node@26.2.0)
+      jest-cli: 30.4.2(@types/node@26.2.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -3665,12 +3667,12 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  ts-jest@29.4.12(@babel/core@8.0.1)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@8.0.1))(jest-util@30.4.1)(jest@30.4.2(@types/node@26.2.0))(typescript@5.9.3):
+  ts-jest@29.4.12(@babel/core@8.0.1)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@8.0.1))(jest-util@30.4.1)(jest@30.4.2(@types/node@26.2.0)(supports-color@8.1.1))(typescript@5.9.3):
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       handlebars: 4.7.9
-      jest: 30.4.2(@types/node@26.2.0)
+      jest: 30.4.2(@types/node@26.2.0)(supports-color@8.1.1)
       json5: 2.2.3
       lodash.memoize: 4.1.2
       make-error: 1.3.6
