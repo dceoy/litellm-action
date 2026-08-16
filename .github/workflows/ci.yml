@@ -43,7 +43,7 @@ jobs:
       package-scripts: lint,typecheck,format:check,test
       package-path: .
       node-version: latest
-      audit: true
+      audit: false
   github-actions-lint-and-scan:
     if: >
       github.event_name == 'push'
@@ -112,6 +112,9 @@ jobs:
       - name: Apply audit fixes
         run: >
           pnpm run audit:fix
+      - name: Verify security audit
+        run: >
+          pnpm run audit
       - name: Build the project
         run: >
           pnpm run build
