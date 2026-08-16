@@ -128,11 +128,11 @@ describe('waitForReady', () => {
     });
 
     const promise = waitForReady('http://localhost:4000', 2);
-    const rejection = expect(promise).rejects.toThrow(
+    const timerAdvance = jest.advanceTimersByTimeAsync(4000);
+    await expect(promise).rejects.toThrow(
       'LiteLLM proxy did not become ready within 2 seconds',
     );
-    await jest.advanceTimersByTimeAsync(4000);
-    await rejection;
+    await timerAdvance;
   });
 
   it('should handle request timeout in checkHealth', async () => {
