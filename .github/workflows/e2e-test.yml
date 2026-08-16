@@ -44,7 +44,7 @@ jobs:
           port: '4000'
           log-level: DEBUG
           timeout: '60'
-          pip-install-args: '--with fastapi<0.141'
+          pip-install-args: '--with fastapi==0.140.0'
       - name: Verify outputs
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
@@ -139,7 +139,7 @@ jobs:
           port: '4001'
           log-level: DEBUG
           timeout: '60'
-          pip-install-args: '--with fastapi<0.141'
+          pip-install-args: '--with fastapi==0.140.0'
       - name: Verify outputs
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
