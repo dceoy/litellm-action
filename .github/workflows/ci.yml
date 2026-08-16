@@ -112,6 +112,11 @@ jobs:
       - name: Refresh vulnerable dependencies
         run: >
           pnpm update @actions/cache@6.2.0 @actions/core@3.0.1 jest@30.4.2
+      - name: Apply transitive security override
+        run: |
+          pnpm config set --location=project --json overrides \
+            "$(pnpm config get --json overrides | jq -c '. + {"js-yaml@>=5.0.0 <=5.2.1":"5.2.2"}')"
+          pnpm install --no-frozen-lockfile
       - name: Verify security audit
         run: >
           pnpm run audit
@@ -133,7 +138,7 @@ jobs:
       - name: Commit and push the changes
         uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5  # v9.1.4
         with:
-          add: ./dist ./package.json ./pnpm-lock.yaml
+          add: ./dist ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml
           message: Update dist and dependency files
           push: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
