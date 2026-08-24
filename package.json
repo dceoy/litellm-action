@@ -39,7 +39,7 @@
     "@biomejs/biome": "^2.5.7",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.2.0",
-    "@vercel/ncc": "^0.44.1",
+    "@vercel/ncc": "^0.45.0",
     "jest": "^30.4.2",
     "oxlint": "^1.77.0",
     "ts-jest": "^29.4.12",
