@@ -7,11 +7,6 @@ settings:
 overrides:
   '@babel/core@<=7.29.0': '>=7.29.6'
   baseline-browser-mapping@>=2.0.0 <2.11.0: ^2.11.0
-  brace-expansion@<1.1.13: '>=1.1.13'
-  brace-expansion@>=2.0.0 <2.0.3: '>=2.0.3'
-  brace-expansion@>=4.0.0 <5.0.10: ^5.0.10
-  brace-expansion@>=4.0.0 <5.0.11: ^5.0.11
-  brace-expansion@>=4.0.0 <5.0.12: ^5.0.12
   browserslist@<=4.28.6: ^4.28.7
   fast-xml-builder@<=1.1.6: '>=1.1.7'
   fast-xml-parser@<5.7.0: '>=5.7.0'
@@ -22,14 +17,8 @@ overrides:
   js-yaml@<=4.1.1: '>=4.2.0'
   js-yaml@>=5.0.0 <=5.2.1: 5.4.1
   js-yaml@>=5.0.0 <=5.4.0: ^5.4.1
-  undici@<6.23.0: '>=6.23.0'
-  undici@<6.24.0: '>=6.24.0'
-  undici@>=6.0.0 <6.24.0: '>=6.24.0'
-  undici@>=7.0.0 <7.28.0: '>=7.28.0'
-  undici@>=7.23.0 <7.28.0: '>=7.28.0'
-  undici@>=8.0.0 <8.10.2: ^8.10.2
-  undici@>=8.1.0 <8.10.2: ^8.10.2
-  undici@>=8.10.0 <8.10.2: ^8.10.2
+  undici: ^8.10.2
+  brace-expansion: ^5.0.12
 
 importers:
 
@@ -930,8 +919,8 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  brace-expansion@5.0.9:
-    resolution: {integrity: sha512-ScQ4IuvIEF1TMlP7Zt+vjJ//9zlPb2SDcxWxM3bk8s6t6GGdJ7KO1dCcTidOPJKePW30LE/2cT7wCyPho9/Wxg==}
+  brace-expansion@5.0.12:
+    resolution: {integrity: sha512-YovQ3rzhaLMIrDjNDMkNS01tea93qhEhG5xy8f6+R0l+dw3Ki+5sCoIoI942iuLZTHWogWktgwVDhU09iNEimQ==}
     engines: {node: 20 || >=22}
 
   braces@3.0.3:
@@ -1767,8 +1756,8 @@ packages:
   undici-types@8.3.0:
     resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
 
-  undici@8.10.0:
-    resolution: {integrity: sha512-HvltHd7avK13QIw/oLe4qoOLyoVSoafqJ2jYOrtMRBkbYT31eiBQ8O0ehRKZiEZCMEyLFQNIADpgCWC5fALvYQ==}
+  undici@8.11.2:
+    resolution: {integrity: sha512-u4UB2/IrKdU6lFxumHmmo1a3fCQO5tzQllRorfoRS63txhrB7xTpSn1PftwC4qEHkOaqP95fCWW4lJzwErwzhQ==}
     engines: {node: '>=22.19.0'}
 
   unrs-resolver@1.12.2:
@@ -1863,7 +1852,7 @@ snapshots:
   '@actions/http-client@4.0.1':
     dependencies:
       tunnel: 0.0.6
-      undici: 8.10.0
+      undici: 8.11.2
 
   '@actions/io@3.0.2': {}
 
@@ -2771,7 +2760,7 @@ snapshots:
 
   baseline-browser-mapping@2.11.27: {}
 
-  brace-expansion@5.0.9:
+  brace-expansion@5.0.12:
     dependencies:
       balanced-match: 4.0.4
 
@@ -3460,11 +3449,11 @@ snapshots:
 
   minimatch@3.1.5:
     dependencies:
-      brace-expansion: 5.0.9
+      brace-expansion: 5.0.12
 
   minimatch@9.0.9:
     dependencies:
-      brace-expansion: 5.0.9
+      brace-expansion: 5.0.12
 
   minimist@1.2.8: {}
 
@@ -3718,7 +3707,7 @@ snapshots:
 
   undici-types@8.3.0: {}
 
-  undici@8.10.0: {}
+  undici@8.11.2: {}
 
   unrs-resolver@1.12.2:
     dependencies:
