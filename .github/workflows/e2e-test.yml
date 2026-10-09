@@ -36,11 +36,17 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      - name: Generate a per-job proxy master key
+        run: |
+          master_key="sk-$(openssl rand -hex 32)"
+          echo "::add-mask::${master_key}"
+          echo "LITELLM_MASTER_KEY=${master_key}" >> "${GITHUB_ENV}"
       - name: Start LiteLLM proxy with model
         id: litellm
         uses: ./
         with:
           model: openrouter/openrouter/free
+          api-key: ${{ env.LITELLM_MASTER_KEY }}
           port: '4000'
           log-level: DEBUG
           timeout: '60'
@@ -58,12 +64,12 @@ jobs:
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
-          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/health/readiness"
+          curl -sf -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" "${STEPS_LITELLM_OUTPUTS_BASE_URL}/health/readiness"
       - name: Check model list endpoint
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
-          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
+          curl -sf -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
       - name: Request OpenRouter completion via LiteLLM (curl)
         id: request-openrouter-completion-with-model
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
@@ -77,6 +83,7 @@ jobs:
             echo "--- Attempt ${attempt}/${MAX_ATTEMPTS} ---"
             if response=$(curl -sS \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+              -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
               -H "Content-Type: application/json" \
               -d "${REQUEST_BODY}" 2>&1); then
               jq . <<<"${response}" || echo "${response}"
@@ -123,6 +130,11 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      - name: Generate a per-job proxy master key
+        run: |
+          master_key="sk-$(openssl rand -hex 32)"
+          echo "::add-mask::${master_key}"
+          echo "LITELLM_MASTER_KEY=${master_key}" >> "${GITHUB_ENV}"
       - name: Start LiteLLM proxy with inline config
         id: litellm
         uses: ./
@@ -136,6 +148,7 @@ jobs:
                   extra_headers:
                     HTTP-Referer: os.environ/OPENROUTER_SITE_URL
                     X-Title: os.environ/OPENROUTER_APP_NAME
+          api-key: ${{ env.LITELLM_MASTER_KEY }}
           port: '4001'
           log-level: DEBUG
           timeout: '60'
@@ -153,12 +166,12 @@ jobs:
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
-          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/health/readiness"
+          curl -sf -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" "${STEPS_LITELLM_OUTPUTS_BASE_URL}/health/readiness"
       - name: Check model list endpoint
         env:
           STEPS_LITELLM_OUTPUTS_BASE_URL: ${{ steps.litellm.outputs.base-url }}
         run: >
-          curl -sf "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
+          curl -sf -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/models"
       - name: Request OpenRouter completion via LiteLLM (curl)
         id: request-openrouter-completion-with-config
         if: ${{ env.OPENROUTER_API_KEY != 'sk-or-v1-dummy' }}
@@ -172,6 +185,7 @@ jobs:
             echo "--- Attempt ${attempt}/${MAX_ATTEMPTS} ---"
             if response=$(curl -sS \
               "${STEPS_LITELLM_OUTPUTS_BASE_URL}/v1/chat/completions" \
+              -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
               -H "Content-Type: application/json" \
               -d "${REQUEST_BODY}" 2>&1); then
               jq . <<<"${response}" || echo "${response}"

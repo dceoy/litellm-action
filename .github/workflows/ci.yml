@@ -110,12 +110,8 @@ jobs:
         run: >
           pnpm install --frozen-lockfile
       - name: Refresh vulnerable dependencies
-        run: >
-          pnpm update @actions/cache@6.2.0 @actions/core@3.0.1 jest@30.4.2
-      - name: Apply transitive security override
         run: |
-          pnpm config set --location=project --json overrides \
-            "$(pnpm config get --json overrides | jq -c '. + {"js-yaml@>=5.0.0 <=5.2.1":"5.2.2"}')"
+          pnpm run audit:fix
           pnpm install --no-frozen-lockfile
       - name: Verify security audit
         run: >
