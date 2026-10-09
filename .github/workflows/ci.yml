@@ -109,9 +109,8 @@ jobs:
       - name: Install dependencies
         run: >
           pnpm install --frozen-lockfile
-      - name: Refresh vulnerable dependencies
+      - name: Refresh patched dependencies
         run: |
-          pnpm run audit:fix
           pnpm install --no-frozen-lockfile
       - name: Verify security audit
         run: >
