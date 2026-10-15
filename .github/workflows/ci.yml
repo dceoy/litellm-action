@@ -56,6 +56,7 @@ jobs:
     uses: dceoy/gha-for-devops/.github/workflows/github-actions-lint-and-scan.yml@main  # zizmor: ignore[unpinned-uses]
     with:
       search-path: .github/workflows
+      actions-lock-exclude-workflows: .github/workflows/e2e-test.yml
   github-actions-e2e-test:
     if: >
       github.event_name == 'push'
