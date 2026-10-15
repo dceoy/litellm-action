@@ -19,4 +19,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh extension install github/gh-actions-lock --pin v0.2.0
-          gh actions-lock --verify
+          # E2E tests intentionally run the checked-out action via ./, which lockfiles do not support.
+          mapfile -t workflows < <(
+            find .github/workflows -maxdepth 1 -type f \
+              \( -name '*.yml' -o -name '*.yaml' \) \
+              ! -name 'e2e-test.yml' | sort
+          )
+          gh actions-lock --verify "${workflows[@]}"
