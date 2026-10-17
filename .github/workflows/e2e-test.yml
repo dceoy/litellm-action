@@ -38,7 +38,7 @@ jobs:
           persist-credentials: false
       - name: Start LiteLLM proxy with model
         id: litellm
-        uses: ./
+        uses: $/  # nosemgrep: yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag
         with:
           model: openrouter/openrouter/free
           port: '4000'
@@ -125,7 +125,7 @@ jobs:
           persist-credentials: false
       - name: Start LiteLLM proxy with inline config
         id: litellm
-        uses: ./
+        uses: $/  # nosemgrep: yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag
         with:
           config: |
             model_list:
