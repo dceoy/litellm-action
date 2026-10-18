@@ -19,6 +19,7 @@ overrides:
   js-yaml@>=5.0.0 <=5.4.0: ^5.4.1
   undici: ^8.10.2
   brace-expansion: ^5.0.12
+  expect@30.2.0: 30.4.1
 
 importers:
 
@@ -2582,7 +2583,7 @@ snapshots:
 
   '@types/jest@30.0.0':
     dependencies:
-      expect: 30.2.0
+      expect: 30.4.1
       pretty-format: 30.2.0
 
   '@types/jsesc@2.5.1': {}
