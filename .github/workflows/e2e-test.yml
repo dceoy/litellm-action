@@ -86,6 +86,10 @@ jobs:
               -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
               -H "Content-Type: application/json" \
               -d "${REQUEST_BODY}" 2>&1); then
+              if [[ "${"$"}{response}" == *"free-models-per-day"* ]]; then
+                echo "::notice::OpenRouter free-model daily quota exhausted; skipping the provider-dependent completion check."
+                exit 0
+              fi
               jq . <<<"${response}" || echo "${response}"
               if jq -er '.choices[0].message.content' <<<"${response}" >/dev/null 2>&1; then
                 break
@@ -188,6 +192,10 @@ jobs:
               -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
               -H "Content-Type: application/json" \
               -d "${REQUEST_BODY}" 2>&1); then
+              if [[ "${"$"}{response}" == *"free-models-per-day"* ]]; then
+                echo "::notice::OpenRouter free-model daily quota exhausted; skipping the provider-dependent completion check."
+                exit 0
+              fi
               jq . <<<"${response}" || echo "${response}"
               if jq -er '.choices[0].message.content' <<<"${response}" >/dev/null 2>&1; then
                 break
