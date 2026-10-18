@@ -35,7 +35,7 @@ jobs:
     if: >
       github.event_name == 'push'
       || github.event_name == 'pull_request'
-      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+      || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
     uses: dceoy/gha-for-devops/.github/workflows/typescript-package-script.yml@main  # zizmor: ignore[unpinned-uses]
@@ -48,7 +48,7 @@ jobs:
     if: >
       github.event_name == 'push'
       || github.event_name == 'pull_request'
-      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+      || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       actions: read
@@ -56,12 +56,12 @@ jobs:
     uses: dceoy/gha-for-devops/.github/workflows/github-actions-lint-and-scan.yml@main  # zizmor: ignore[unpinned-uses]
     with:
       search-path: .github/workflows
-      actionlint-extra-ignore-regex: 'specifying action "\$/" in invalid format because ref is missing'
+      actionlint-extra-ignore-regex: 'specifying action "\\$/" in invalid format because ref is missing'
   github-actions-e2e-test:
     if: >
       github.event_name == 'push'
       || github.event_name == 'pull_request'
-      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+      || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
     uses: ./.github/workflows/e2e-test.yml
@@ -110,13 +110,8 @@ jobs:
       - name: Install dependencies
         run: >
           pnpm install --frozen-lockfile
-      - name: Refresh vulnerable dependencies
-        run: >
-          pnpm update @actions/cache@6.2.0 @actions/core@3.0.1 jest@30.4.2
-      - name: Apply transitive security override
+      - name: Refresh patched dependencies
         run: |
-          pnpm config set --location=project --json overrides \
-            "$(pnpm config get --json overrides | jq -c '. + {"js-yaml@>=5.0.0 <=5.2.1":"5.2.2"}')"
           pnpm install --no-frozen-lockfile
       - name: Verify security audit
         run: >
