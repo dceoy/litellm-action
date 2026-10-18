@@ -138,19 +138,3 @@ jobs:
           message: Update dist and dependency files
           push: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
-  dependabot-auto-merge:
-    # Keep repository merges intentional and squash-only.
-    if: false
-    needs:
-      - typescript-lint-and-test
-      - github-actions-lint-and-scan
-      - build-and-update-dist
-    permissions:
-      contents: write
-      pull-requests: write
-      actions: read
-      checks: read
-      statuses: read
-    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main  # zizmor: ignore[unpinned-uses]
-    with:
-      unconditional: true
