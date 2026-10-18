@@ -86,7 +86,7 @@ jobs:
               -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
               -H "Content-Type: application/json" \
               -d "${REQUEST_BODY}" 2>&1); then
-              if [[ "${"$"}{response}" == *"free-models-per-day"* ]]; then
+              if [[ "${response}" == *"free-models-per-day"* ]]; then
                 echo "::notice::OpenRouter free-model daily quota exhausted; skipping the provider-dependent completion check."
                 exit 0
               fi
@@ -192,7 +192,7 @@ jobs:
               -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
               -H "Content-Type: application/json" \
               -d "${REQUEST_BODY}" 2>&1); then
-              if [[ "${"$"}{response}" == *"free-models-per-day"* ]]; then
+              if [[ "${response}" == *"free-models-per-day"* ]]; then
                 echo "::notice::OpenRouter free-model daily quota exhausted; skipping the provider-dependent completion check."
                 exit 0
               fi
