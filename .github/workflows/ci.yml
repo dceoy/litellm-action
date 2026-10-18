@@ -139,9 +139,8 @@ jobs:
           push: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
   dependabot-auto-merge:
-    if: >
-      github.event_name == 'pull_request'
-      && github.event.pull_request.user.login == 'dependabot[bot]'
+    # Keep repository merges intentional and squash-only.
+    if: false
     needs:
       - typescript-lint-and-test
       - github-actions-lint-and-scan
