@@ -138,3 +138,19 @@ jobs:
           message: Update dist and dependency files
           push: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
+dependabot-auto-merge:
+    if: >
+      github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+    needs:
+      - typescript-lint-and-test
+      - github-actions-lint-and-scan
+      - github-actions-e2e-test
+    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main  # zizmor: ignore[unpinned-uses]
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+      checks: read
+      statuses: read
+    with:
+      unconditional: true
