@@ -52,7 +52,7 @@ steps:
             litellm_params:
               model: gemini/gemini-3-flash-preview
               api_key: os.environ/GEMINI_API_KEY
-      port: '8080'
+      port: "8080"
 ```
 
 ## Behavior
