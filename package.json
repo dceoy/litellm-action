@@ -11,8 +11,8 @@
     "build:post": "ncc build lib/post.js -o dist/post --source-map --license licenses.txt && node scripts/prepend-license.js dist/post/licenses.txt",
     "lint": "oxlint --jest-plugin --node-plugin .",
     "lint:fix": "oxlint --jest-plugin --node-plugin --fix .",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
+    "format": "biome format --write . && oxfmt --write '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
+    "format:check": "biome format . && oxfmt --check '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
     "test": "jest --coverage",
     "audit": "pnpm audit",
@@ -41,6 +41,7 @@
     "@types/node": "^26.6.5",
     "@vercel/ncc": "^0.45.0",
     "jest": "^30.5.2",
+    "oxfmt": "^0.72.0",
     "oxlint": "^1.87.0",
     "ts-jest": "^29.4.14",
     "typescript": "^6.0.3"
