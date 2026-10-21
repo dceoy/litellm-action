@@ -79,7 +79,7 @@ jobs:
       security-events: write
     with:
       language: >
-        ["actions","javascript-typescript"]
+        ["actions","javascript"]
   github-major-version-tag:
     if: >
       (github.event_name == 'release' && github.event.action == 'released')
