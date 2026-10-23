@@ -7,6 +7,7 @@ workflows:
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'endbug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8'
         - 'pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413'
+    '.github/workflows/codeql.yml': []
     '.github/workflows/e2e-test.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
 dependencies:
