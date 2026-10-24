@@ -42,7 +42,6 @@ jobs:
     with:
       package-scripts: lint,typecheck,format:check,test
       package-path: .
-      node-version: latest
       audit: false
   github-actions-lint-and-scan:
     if: >
