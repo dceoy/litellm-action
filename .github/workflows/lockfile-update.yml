@@ -1,0 +1,30 @@
+name: Refresh pnpm lockfile
+on:
+  push:
+    branches:
+      - 'dependabot/**'
+permissions:
+  contents: write
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - name: Setup pnpm
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e  # v3.1.2
+        with:
+          version: 12
+          install: false
+          cache: false
+      - name: Update lockfile
+        run: pnpm install --lockfile-only --no-frozen-lockfile
+      - name: Commit lockfile
+        uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8  # v11.1.1
+        with:
+          add: pnpm-lock.yaml
+          message: 'fix(deps): update TypeScript compatibility lockfile'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
