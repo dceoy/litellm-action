@@ -10,6 +10,10 @@ workflows:
     '.github/workflows/codeql.yml': []
     '.github/workflows/e2e-test.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+    '.github/workflows/lockfile-update.yml':
+        - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        - 'endbug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8'
+        - 'pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e'
 dependencies:
     'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1':
         ref: 'v7.0.1'
