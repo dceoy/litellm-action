@@ -6,6 +6,7 @@ workflows:
     '.github/workflows/ci.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'endbug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8'
+        - 'pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e'
     '.github/workflows/codeql.yml': []
     '.github/workflows/e2e-test.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
@@ -20,3 +21,8 @@ dependencies:
         commit: 'sha1-cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8'
         owner_id: 26386270
         repo_id: 209101661
+    'pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e':
+        ref: 'v3.1.2'
+        commit: 'sha1-fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e'
+        owner_id: 21320719
+        repo_id: 1235693694
