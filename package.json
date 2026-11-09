@@ -36,14 +36,14 @@
     "@actions/exec": "^3.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.5",
+    "@biomejs/biome": "^2.6.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vercel/ncc": "^0.45.0",
     "jest": "^30.5.2",
-    "oxfmt": "^0.76.0",
-    "oxlint": "^1.91.0",
+    "oxfmt": "^0.77.0",
+    "oxlint": "^1.92.0",
     "ts-jest": "^29.4.15",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
