@@ -38,7 +38,7 @@ jobs:
       || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
-    uses: dceoy/gha-for-devops/.github/workflows/typescript-package-script.yml@main  # zizmor: ignore[unpinned-uses]
+    uses: dceoy/gha-for-devops/.github/workflows/typescript-package-script.yml@9e394d7c18b3a00fb853cd3c693cc4eeb5f0c825  # v2.3.0
     with:
       package-scripts: lint,typecheck,format:check,test
       package-path: .
@@ -52,7 +52,7 @@ jobs:
       contents: read
       actions: read
       security-events: write
-    uses: dceoy/gha-for-devops/.github/workflows/github-actions-lint-and-scan.yml@main  # zizmor: ignore[unpinned-uses]
+    uses: dceoy/gha-for-devops/.github/workflows/github-actions-lint-and-scan.yml@9e394d7c18b3a00fb853cd3c693cc4eeb5f0c825  # v2.3.0
     with:
       search-path: .github/workflows
       actionlint-extra-ignore-regex: 'specifying action "\$/" in invalid format because ref is missing'
@@ -72,7 +72,7 @@ jobs:
       || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
-    uses: dceoy/gha-for-devops/.github/workflows/github-major-version-tag.yml@main  # zizmor: ignore[unpinned-uses]
+    uses: dceoy/gha-for-devops/.github/workflows/github-major-version-tag.yml@9e394d7c18b3a00fb853cd3c693cc4eeb5f0c825  # v2.3.0
   build-and-update-dist:
     if: >
       github.event_name == 'push'
@@ -134,7 +134,7 @@ jobs:
       - typescript-lint-and-test
       - github-actions-lint-and-scan
       - github-actions-e2e-test
-    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main  # zizmor: ignore[unpinned-uses]
+    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@9e394d7c18b3a00fb853cd3c693cc4eeb5f0c825  # v2.3.0
     permissions:
       contents: write
       pull-requests: write
