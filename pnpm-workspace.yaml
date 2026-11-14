@@ -18,3 +18,8 @@ overrides:
   undici: ^8.12.2
   brace-expansion: ^5.0.12
   expect@30.2.0: 30.4.1
+  'glob@>=9.0.0 <=14.0.1': 14.0.6
+  'minimatch@>=7.0.0 <11.0.1': 11.0.8
+  'jest-config@30.5.2>deepmerge': npm:@shivammathur/deepmerge@4.3.2
+patchedDependencies:
+  '@actions/glob@0.7.0': patches/@actions__glob@0.7.0.patch

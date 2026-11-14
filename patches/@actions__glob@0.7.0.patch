@@ -1,0 +1,18 @@
+diff --git a/lib/internal-pattern.js b/lib/internal-pattern.js
+index f5354dd5960be463f0adf2b337ac7ba9a9d080db..8707b28c2fec340ede7c45ac34e16a6bb7a0b7db 100644
+--- a/lib/internal-pattern.js
++++ b/lib/internal-pattern.js
+@@ -97,11 +97,11 @@ export class Pattern {
+     partialMatch(itemPath) {
+         // Normalize slashes and trim unnecessary trailing slash
+         itemPath = pathHelper.safeTrimTrailingSeparator(itemPath);
+-        // matchOne does not handle root path correctly
++        // Partial matching does not handle the root path correctly
+         if (pathHelper.dirname(itemPath) === itemPath) {
+             return this.rootRegExp.test(itemPath);
+         }
+-        return this.minimatch.matchOne(itemPath.split(IS_WINDOWS ? /\\+/ : /\/+/), this.minimatch.set[0], true);
++        return this.minimatch.match(itemPath, true);
+     }
+     /**
+      * Escapes glob patterns within a path

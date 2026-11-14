@@ -11,7 +11,7 @@ GitHub Action to install and run a local
 
 ```yaml
 steps:
-  - uses: dceoy/litellm-action@v0
+  - uses: dceoy/litellm-action@574e052ed206e2506ca60add18af350a3a56cbd8 # v0.1.2
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     with:
@@ -26,8 +26,8 @@ steps:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-  - uses: dceoy/litellm-action@v0
+  - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  - uses: dceoy/litellm-action@574e052ed206e2506ca60add18af350a3a56cbd8 # v0.1.2
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     with:
@@ -38,7 +38,7 @@ steps:
 
 ```yaml
 steps:
-  - uses: dceoy/litellm-action@v0
+  - uses: dceoy/litellm-action@574e052ed206e2506ca60add18af350a3a56cbd8 # v0.1.2
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     with:
