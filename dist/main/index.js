@@ -117613,7 +117613,8 @@ async function run() {
             }
         }
         addPath(uvBinDir);
-        process.env.PATH = `${uvBinDir}${external_path_namespaceObject.delimiter}${process.env.PATH ?? ''}`;
+        process.env['PATH'] =
+            `${uvBinDir}${external_path_namespaceObject.delimiter}${process.env['PATH'] ?? ''}`;
         // Determine config file path
         let resolvedConfigPath = configPath;
         if (config && !configPath) {
@@ -117639,9 +117640,9 @@ async function run() {
         // Set up environment variables
         const env = { ...process.env };
         if (apiKey) {
-            env.LITELLM_MASTER_KEY = apiKey;
+            env['LITELLM_MASTER_KEY'] = apiKey;
         }
-        env.LITELLM_LOG = logLevel;
+        env['LITELLM_LOG'] = logLevel;
         // Start the proxy server
         const logFilePath = external_path_namespaceObject.join(external_os_.tmpdir(), 'litellm-proxy.log');
         const logFd = external_fs_namespaceObject.openSync(logFilePath, 'w');
@@ -117690,7 +117691,7 @@ async function run() {
 //# sourceMappingURL=run.js.map
 ;// CONCATENATED MODULE: ./lib/main.js
 
-run();
+void run();
 //# sourceMappingURL=main.js.map
 })();
 

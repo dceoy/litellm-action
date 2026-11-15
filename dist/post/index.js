@@ -48885,12 +48885,11 @@ async function cleanup() {
             info('LiteLLM proxy stopped');
         }
         catch (error) {
-            const errno = error;
-            if (errno.code === 'ESRCH') {
+            if (error instanceof Error && 'code' in error && error.code === 'ESRCH') {
                 info('LiteLLM proxy process already exited');
             }
             else {
-                warning(`Failed to stop LiteLLM proxy: ${error}`);
+                warning(`Failed to stop LiteLLM proxy: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
         }
     }
@@ -48909,7 +48908,7 @@ async function cleanup() {
 //# sourceMappingURL=cleanup.js.map
 ;// CONCATENATED MODULE: ./lib/post.js
 
-cleanup();
+void cleanup();
 //# sourceMappingURL=post.js.map
 })();
 
