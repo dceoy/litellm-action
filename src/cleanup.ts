@@ -22,11 +22,16 @@ export async function cleanup(): Promise<void> {
       await terminateProcess(pid);
       core.info('LiteLLM proxy stopped');
     } catch (error) {
-      const errno = error as NodeJS.ErrnoException;
-      if (errno.code === 'ESRCH') {
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        error.code === 'ESRCH'
+      ) {
         core.info('LiteLLM proxy process already exited');
       } else {
-        core.warning(`Failed to stop LiteLLM proxy: ${error}`);
+        core.warning(
+          `Failed to stop LiteLLM proxy: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
       }
     }
   }

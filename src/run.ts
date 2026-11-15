@@ -84,7 +84,7 @@ export async function run(): Promise<void> {
     }
 
     core.addPath(uvBinDir);
-    process.env.PATH = `${uvBinDir}${path.delimiter}${process.env.PATH ?? ''}`;
+    process.env["PATH"] = `${uvBinDir}${path.delimiter}${process.env["PATH"] ?? ''}`;
 
     // Determine config file path
     let resolvedConfigPath = configPath;
@@ -115,14 +115,11 @@ export async function run(): Promise<void> {
     }
 
     // Set up environment variables
-    const env: Record<string, string> = { ...process.env } as Record<
-      string,
-      string
-    >;
+    const env: NodeJS.ProcessEnv = { ...process.env };
     if (apiKey) {
-      env.LITELLM_MASTER_KEY = apiKey;
+      env["LITELLM_MASTER_KEY"] = apiKey;
     }
-    env.LITELLM_LOG = logLevel;
+    env["LITELLM_LOG"] = logLevel;
 
     // Start the proxy server
     const logFilePath = path.join(os.tmpdir(), 'litellm-proxy.log');

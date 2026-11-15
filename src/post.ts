@@ -1,3 +1,3 @@
 import { cleanup } from './cleanup';
 
-cleanup();
+void cleanup();

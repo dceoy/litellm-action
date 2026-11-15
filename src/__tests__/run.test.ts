@@ -178,14 +178,14 @@ describe('run', () => {
   });
 
   it('should prepend uvBinDir to PATH even when PATH is undefined', async () => {
-    const savedPath = process.env.PATH;
-    delete process.env.PATH;
+    const savedPath = process.env["PATH"];
+    delete process.env["PATH"];
     setupDefaultInputs();
 
     await run();
 
-    expect(process.env.PATH).toContain('/home/runner/.local/bin');
-    process.env.PATH = savedPath;
+    expect(process.env["PATH"]).toContain('/home/runner/.local/bin');
+    process.env["PATH"] = savedPath;
   });
 
   it('should install specific version when provided', async () => {

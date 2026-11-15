@@ -14,24 +14,23 @@
     "builtin": true,
     "node": true
   },
-  "ignorePatterns": [
-    "coverage/**",
-    "dist/**",
-    "lib/**",
-    "node_modules/**"
-  ],
+  "ignorePatterns": ["coverage/**", "dist/**", "lib/**", "node_modules/**"],
   "overrides": [
     {
-      "files": [
-        "src/__tests__/**/*.test.ts"
-      ],
+      "files": ["src/__tests__/**/*.test.ts"],
       "env": {
         "jest": true
       },
       "rules": {
         "typescript/no-floating-promises": "off"
+      },
+      "options": {
+        "typeAware": false
       }
     }
   ],
-  "plugins": ["import", "oxc", "promise", "typescript", "unicorn"]
+  "plugins": ["import", "oxc", "promise", "typescript", "unicorn"],
+  "rules": {
+    "eslint/no-await-in-loop": "off"
+  }
 }
