@@ -14,7 +14,13 @@
     "builtin": true,
     "node": true
   },
-  "ignorePatterns": ["coverage/**", "dist/**", "lib/**", "node_modules/**", "src/__tests__/**"],
+  "ignorePatterns": [
+    "coverage/**",
+    "dist/**",
+    "lib/**",
+    "node_modules/**",
+    "src/__tests__/**"
+  ],
   "overrides": [
     {
       "files": ["src/__tests__/**/*.test.ts"],
@@ -31,13 +37,7 @@
       }
     }
   ],
-  "plugins": [
-    "import",
-    "oxc",
-    "promise",
-    "typescript",
-    "unicorn"
-  ],
+  "plugins": ["import", "oxc", "promise", "typescript", "unicorn"],
   "rules": {
     "eslint/no-await-in-loop": "off"
   }
