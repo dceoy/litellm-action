@@ -1,23 +1,37 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "categories": {
-    "correctness": "error"
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
   },
   "options": {
     "denyWarnings": true,
-    "reportUnusedDisableDirectives": "error"
+    "reportUnusedDisableDirectives": "error",
+    "typeAware": true
   },
   "env": {
     "builtin": true,
     "node": true
   },
-  "ignorePatterns": ["coverage/**", "dist/**", "lib/**", "node_modules/**"],
+  "ignorePatterns": [
+    "coverage/**",
+    "dist/**",
+    "lib/**",
+    "node_modules/**"
+  ],
   "overrides": [
     {
-      "files": ["src/__tests__/**/*.test.ts"],
+      "files": [
+        "src/__tests__/**/*.test.ts"
+      ],
       "env": {
         "jest": true
+      },
+      "rules": {
+        "typescript/no-floating-promises": "off"
       }
     }
-  ]
+  ],
+  "plugins": ["import", "oxc", "promise", "typescript", "unicorn"]
 }

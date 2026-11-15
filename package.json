@@ -9,8 +9,8 @@
     "build:prep": "tsc -p tsconfig.build.json",
     "build:main": "ncc build lib/main.js -o dist/main --source-map --license licenses.txt && node scripts/prepend-license.js dist/main/licenses.txt",
     "build:post": "ncc build lib/post.js -o dist/post --source-map --license licenses.txt && node scripts/prepend-license.js dist/post/licenses.txt",
-    "lint": "oxlint --jest-plugin --node-plugin .",
-    "lint:fix": "oxlint --jest-plugin --node-plugin --fix .",
+    "lint": "oxlint --jest-plugin --node-plugin . && biome lint . --error-on-warnings",
+    "lint:fix": "oxlint --jest-plugin --node-plugin --fix . && biome lint --write .",
     "format": "biome format --write . && oxfmt --write '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "format:check": "biome format . && oxfmt --check '**/*.{md,mdx}' --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
@@ -44,6 +44,7 @@
     "jest": "^30.5.2",
     "oxfmt": "^0.78.0",
     "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "7.0.2006",
     "ts-jest": "^29.4.15",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   },

@@ -7,16 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "*.js",
-      "*.json",
-      "*.mjs",
-      "*.ts",
-      ".oxlintrc.json",
-      "biome.json",
-      "scripts/**/*.js",
-      "src/**/*.ts"
-    ]
+    "includes": ["*.js", "*.json", "*.mjs", "*.ts", ".oxlintrc.json", "biome.json", "scripts/**/*.js", "src/**/*.ts"]
   },
   "formatter": {
     "enabled": true,
@@ -25,7 +16,20 @@
     "lineWidth": 80
   },
   "linter": {
-    "enabled": false
+    "enabled": true,
+    "rules": {
+      "preset": "all",
+      "correctness": {
+        "useQwikValidLexicalScope": "off"
+      },
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+      "style": {
+        "noExcessiveLinesPerFile": "off",
+        "useExportsLast": "off"
+      }
+    }
   },
   "assist": {
     "enabled": false
