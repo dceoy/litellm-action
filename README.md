@@ -116,9 +116,10 @@ pnpm run test
 pnpm run build
 ```
 
-`pnpm run format:check` uses Biome for the repository's JavaScript,
-TypeScript, and JSON files. `pnpm run lint` uses Oxlint for the JavaScript and
-TypeScript lint pass.
+`pnpm run format:check` uses Biome for JavaScript, TypeScript, and JSON.
+`pnpm run lint` runs type-aware Oxlint on production sources and Biome's
+recommended rules for the repository. `pnpm run typecheck` uses TypeScript's
+strict compiler checks; CI also enforces Jest's coverage thresholds.
 
 `dist/main` and `dist/post` are generated with `@vercel/ncc` and should stay
 in sync with source changes.
