@@ -24,8 +24,7 @@ on:
           - update
         description: Choose the workflow to run
         default: lint-and-test
-permissions:
-  contents: read
+permissions: {}
 defaults:
   run:
     shell: bash -euo pipefail {0}

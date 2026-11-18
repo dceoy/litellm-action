@@ -17,14 +17,15 @@ on:
       OPENROUTER_API_KEY:
         required: false
         description: API key for OpenRouter
-permissions:
-  contents: read
+permissions: {}
 defaults:
   run:
     shell: bash -euo pipefail {0}
     working-directory: .
 jobs:
   e2e-test-with-model:
+    permissions:
+      contents: read
     runs-on: ${{ inputs.runs-on }}
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}   # zizmor: ignore[secrets-outside-env]
@@ -123,6 +124,8 @@ jobs:
           done
           echo "LiteLLM proxy log file was not found."
   e2e-test-with-config:
+    permissions:
+      contents: read
     runs-on: ${{ inputs.runs-on }}
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || 'sk-or-v1-dummy' }}   # zizmor: ignore[secrets-outside-env]
