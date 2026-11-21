@@ -18,12 +18,13 @@
     "coverage/**",
     "dist/**",
     "lib/**",
-    "node_modules/**",
-    "src/__tests__/**"
+    "node_modules/**"
   ],
   "overrides": [
     {
-      "files": ["src/__tests__/**/*.test.ts"],
+      "files": [
+        "src/__tests__/**/*.test.ts"
+      ],
       "env": {
         "jest": true
       },
@@ -37,7 +38,13 @@
       }
     }
   ],
-  "plugins": ["import", "oxc", "promise", "typescript", "unicorn"],
+  "plugins": [
+    "import",
+    "oxc",
+    "promise",
+    "typescript",
+    "unicorn"
+  ],
   "rules": {
     "eslint/no-await-in-loop": "off"
   }
