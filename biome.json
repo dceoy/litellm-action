@@ -38,8 +38,7 @@
         "noExcessiveLinesPerFile": "off",
         "useExportsLast": "off",
         "noDefaultExport": "off"
-      },
-      "suspicious": {}
+      }
     }
   },
   "assist": {
