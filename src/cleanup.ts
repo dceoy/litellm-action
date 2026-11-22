@@ -1,45 +1,52 @@
-import * as core from '@actions/core';
-import * as exec from '@actions/exec';
-import * as fs from 'fs';
-import * as os from 'os';
+import {
+  endGroup as coreEndGroup,
+  getState as coreGetState,
+  info as coreInfo,
+  startGroup as coreStartGroup,
+  warning as coreWarning,
+} from '@actions/core';
+import { exec as execExec } from '@actions/exec';
+import { existsSync as fsExistsSync, readFileSync as fsReadFileSync } from 'fs';
+import { platform as osPlatform } from 'os';
+import process from 'node:process';
 
 export async function terminateProcess(pid: number): Promise<void> {
-  if (os.platform() === 'win32') {
-    await exec.exec('taskkill', ['/T', '/F', '/PID', pid.toString()]);
+  if (osPlatform() === 'win32') {
+    await execExec('taskkill', ['/T', '/F', '/PID', pid.toString()]);
   } else {
     process.kill(-pid, 'SIGTERM');
   }
 }
 
 export async function cleanup(): Promise<void> {
-  const pidStr = core.getState('pid');
-  const logFile = core.getState('log-file');
+  const pidStr = coreGetState('pid');
+  const logFile = coreGetState('log-file');
 
   if (pidStr) {
-    const pid = parseInt(pidStr, 10);
-    core.info(`Stopping LiteLLM proxy (PID: ${pid})...`);
+    const pid = Number.parseInt(pidStr, 10);
+    coreInfo(`Stopping LiteLLM proxy (PID: ${pid})...`);
     try {
       await terminateProcess(pid);
-      core.info('LiteLLM proxy stopped');
+      coreInfo('LiteLLM proxy stopped');
     } catch (error) {
       if (error instanceof Error && 'code' in error && error.code === 'ESRCH') {
-        core.info('LiteLLM proxy process already exited');
+        coreInfo('LiteLLM proxy process already exited');
       } else {
-        core.warning(
+        coreWarning(
           `Failed to stop LiteLLM proxy: ${error instanceof Error ? error.message : 'Unknown error'}`,
         );
       }
     }
   }
 
-  if (logFile && fs.existsSync(logFile)) {
-    core.startGroup('LiteLLM Proxy Logs');
-    const logs = fs.readFileSync(logFile, 'utf-8');
+  if (logFile && fsExistsSync(logFile)) {
+    coreStartGroup('LiteLLM Proxy Logs');
+    const logs = fsReadFileSync(logFile, 'utf-8');
     if (logs.trim()) {
-      core.info(logs);
+      coreInfo(logs);
     } else {
-      core.info('(no logs)');
+      coreInfo('(no logs)');
     }
-    core.endGroup();
+    coreEndGroup();
   }
 }

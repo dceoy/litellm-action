@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import type * as child_process_types from 'child_process';
+import type * as childProcessTypes from 'child_process';
 
 jest.mock('@actions/core');
 jest.mock('@actions/exec');
@@ -26,14 +26,14 @@ jest.mock('os', () => ({
 
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
-import * as child_process from 'child_process';
+import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 
 const coreMock = core as jest.Mocked<typeof core>;
 const execMock = exec as jest.Mocked<typeof exec>;
-const spawnMock = child_process.spawn as jest.MockedFunction<
-  typeof child_process.spawn
+const spawnMock = childProcess.spawn as jest.MockedFunction<
+  typeof childProcess.spawn
 >;
 const fsMock = {
   writeFileSync: fs.writeFileSync as jest.Mock,
@@ -56,6 +56,7 @@ const cacheMod = jest.requireMock('../cache') as {
 };
 
 import { run } from '../run';
+import process from 'node:process';
 
 function setupDefaultInputs(overrides: Record<string, string> = {}): void {
   const defaults: Record<string, string> = {
@@ -78,8 +79,8 @@ function setupDefaultInputs(overrides: Record<string, string> = {}): void {
 
 function createMockChild(
   pid: number | undefined,
-): child_process_types.ChildProcess {
-  const child = new EventEmitter() as child_process_types.ChildProcess;
+): childProcessTypes.ChildProcess {
+  const child = new EventEmitter() as childProcessTypes.ChildProcess;
   Object.defineProperty(child, 'pid', { value: pid, writable: true });
   child.unref = jest.fn();
   return child;
@@ -96,7 +97,7 @@ describe('run', () => {
     cacheMod.saveLitellmCache.mockResolvedValue(undefined);
 
     spawnMock.mockReturnValue(
-      createMockChild(12345) as ReturnType<typeof child_process.spawn>,
+      createMockChild(12_345) as ReturnType<typeof childProcess.spawn>,
     );
     fsMock.openSync.mockReturnValue(3);
     fsMock.closeSync.mockReturnValue(undefined);
@@ -354,7 +355,7 @@ describe('run', () => {
 
   it('should fail when child.pid is undefined', async () => {
     spawnMock.mockReturnValue(
-      createMockChild(undefined) as ReturnType<typeof child_process.spawn>,
+      createMockChild(undefined) as ReturnType<typeof childProcess.spawn>,
     );
     setupDefaultInputs();
 
@@ -371,7 +372,9 @@ describe('run', () => {
     execMock.exec.mockResolvedValueOnce(0);
     execMock.exec.mockRejectedValue(new Error('uv tool install failed'));
     coreMock.getState.mockImplementation((name: string) => {
-      if (name === 'log-file') return '/tmp/litellm-proxy.log';
+      if (name === 'log-file') {
+        return '/tmp/litellm-proxy.log';
+      }
       return '';
     });
     fsMock.existsSync.mockReturnValue(true);
@@ -414,7 +417,9 @@ describe('run', () => {
     execMock.exec.mockResolvedValueOnce(0);
     execMock.exec.mockRejectedValue(new Error('fail'));
     coreMock.getState.mockImplementation((name: string) => {
-      if (name === 'log-file') return '/tmp/litellm-proxy.log';
+      if (name === 'log-file') {
+        return '/tmp/litellm-proxy.log';
+      }
       return '';
     });
     fsMock.existsSync.mockReturnValue(false);

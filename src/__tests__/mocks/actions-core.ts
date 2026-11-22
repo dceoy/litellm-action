@@ -1,43 +1,43 @@
-export function getInput(...args: unknown[]): string {
-  void args;
+export function getInput(..._args: unknown[]): string {
   return '';
 }
 
-export function startGroup(...args: unknown[]): void {
-  void args;
+export function startGroup(..._args: unknown[]): void {
+  // Intentionally empty mock.
 }
 
-export function endGroup(): void {}
-
-export function addPath(...args: unknown[]): void {
-  void args;
+export function endGroup(): void {
+  // Intentionally empty mock.
 }
 
-export function info(...args: unknown[]): void {
-  void args;
+export function addPath(..._args: unknown[]): void {
+  // Intentionally empty mock.
 }
 
-export function debug(...args: unknown[]): void {
-  void args;
+export function info(..._args: unknown[]): void {
+  // Intentionally empty mock.
 }
 
-export function warning(...args: unknown[]): void {
-  void args;
+export function debug(..._args: unknown[]): void {
+  // Intentionally empty mock.
 }
 
-export function setFailed(...args: unknown[]): void {
-  void args;
+export function warning(..._args: unknown[]): void {
+  // Intentionally empty mock.
 }
 
-export function saveState(...args: unknown[]): void {
-  void args;
+export function setFailed(..._args: unknown[]): void {
+  // Intentionally empty mock.
 }
 
-export function getState(...args: unknown[]): string {
-  void args;
+export function saveState(..._args: unknown[]): void {
+  // Intentionally empty mock.
+}
+
+export function getState(..._args: unknown[]): string {
   return '';
 }
 
-export function setOutput(...args: unknown[]): void {
-  void args;
+export function setOutput(..._args: unknown[]): void {
+  // Intentionally empty mock.
 }

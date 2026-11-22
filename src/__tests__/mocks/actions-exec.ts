@@ -1,4 +1,3 @@
-export async function exec(...args: unknown[]): Promise<number> {
-  void args;
-  return 0;
+export function exec(..._args: unknown[]): Promise<number> {
+  return Promise.resolve(0);
 }

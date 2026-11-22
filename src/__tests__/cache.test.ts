@@ -58,13 +58,13 @@ describe('cache', () => {
     it('should include platform, arch, version, and args hash', () => {
       const key = getCacheKey('1.55.0', '');
 
-      expect(key).toMatch(/^litellm-linux-x64-1\.55\.0-[a-f0-9]{16}$/);
+      expect(key).toMatch(/^litellm-linux-x64-1\.55\.0-[a-f0-9]{16}$/u);
     });
 
     it('should use empty version verbatim in key', () => {
       const key = getCacheKey('', '');
 
-      expect(key).toMatch(/^litellm-linux-x64--[a-f0-9]{16}$/);
+      expect(key).toMatch(/^litellm-linux-x64--[a-f0-9]{16}$/u);
     });
 
     it('should produce different keys for different pip-install-args', () => {
@@ -153,7 +153,7 @@ describe('cache', () => {
       await restoreLitellmCache('1.55.0', '');
 
       expect(coreMock.info).toHaveBeenCalledWith(
-        expect.stringMatching(/^Cache key: litellm-linux-x64-1\.55\.0-/),
+        expect.stringMatching(/^Cache key: litellm-linux-x64-1\.55\.0-/u),
       );
     });
   });

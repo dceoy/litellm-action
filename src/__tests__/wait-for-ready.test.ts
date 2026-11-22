@@ -57,7 +57,9 @@ function mockHttpTimeout(): void {
     const req: MockRequest = {
       on: jest.fn().mockReturnThis(),
       setTimeout: jest.fn((_ms: number, cb?: () => void) => {
-        if (cb) cb();
+        if (cb) {
+          cb();
+        }
         return req;
       }),
       destroy: jest.fn(),

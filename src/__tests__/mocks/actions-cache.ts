@@ -1,11 +1,7 @@
-export async function restoreCache(
-  ...args: unknown[]
-): Promise<string | undefined> {
-  void args;
-  return undefined;
+export function restoreCache(..._args: unknown[]): Promise<string | undefined> {
+  return Promise.resolve(undefined);
 }
 
-export async function saveCache(...args: unknown[]): Promise<number> {
-  void args;
-  return 0;
+export function saveCache(..._args: unknown[]): Promise<number> {
+  return Promise.resolve(0);
 }

@@ -1,23 +1,29 @@
-import * as cache from '@actions/cache';
-import * as core from '@actions/core';
-import * as crypto from 'crypto';
-import * as os from 'os';
-import * as path from 'path';
+import {
+  restoreCache as cacheRestoreCache,
+  saveCache as cacheSaveCache,
+} from '@actions/cache';
+import { info as coreInfo, warning as coreWarning } from '@actions/core';
+import { createHash as cryptoCreateHash } from 'crypto';
+import {
+  arch as osArch,
+  homedir as osHomedir,
+  platform as osPlatform,
+} from 'os';
+import { join as pathJoin } from 'path';
 
 export function getCachePaths(): string[] {
-  const home = os.homedir();
+  const home = osHomedir();
   return [
-    path.join(home, '.local', 'share', 'uv'),
-    path.join(home, '.local', 'bin'),
+    pathJoin(home, '.local', 'share', 'uv'),
+    pathJoin(home, '.local', 'bin'),
   ];
 }
 
 export function getCacheKey(version: string, pipInstallArgs: string): string {
-  const platform = os.platform();
-  const arch = os.arch();
+  const platform = osPlatform();
+  const arch = osArch();
   const versionPart = version;
-  const hash = crypto
-    .createHash('sha256')
+  const hash = cryptoCreateHash('sha256')
     .update(pipInstallArgs)
     .digest('hex')
     .slice(0, 16);
@@ -31,16 +37,16 @@ export async function restoreLitellmCache(
   try {
     const primaryKey = getCacheKey(version, pipInstallArgs);
     const paths = getCachePaths();
-    core.info(`Cache key: ${primaryKey}`);
-    const matchedKey = await cache.restoreCache(paths, primaryKey);
+    coreInfo(`Cache key: ${primaryKey}`);
+    const matchedKey = await cacheRestoreCache(paths, primaryKey);
     if (matchedKey) {
-      core.info(`Cache restored from key: ${matchedKey}`);
+      coreInfo(`Cache restored from key: ${matchedKey}`);
       return true;
     }
-    core.info('Cache not found');
+    coreInfo('Cache not found');
     return false;
   } catch (error) {
-    core.warning(
+    coreWarning(
       `Failed to restore cache: ${error instanceof Error ? error.message : String(error)}`,
     );
     return false;
@@ -54,10 +60,10 @@ export async function saveLitellmCache(
   try {
     const key = getCacheKey(version, pipInstallArgs);
     const paths = getCachePaths();
-    await cache.saveCache(paths, key);
-    core.info(`Cache saved with key: ${key}`);
+    await cacheSaveCache(paths, key);
+    coreInfo(`Cache saved with key: ${key}`);
   } catch (error) {
-    core.warning(
+    coreWarning(
       `Failed to save cache: ${error instanceof Error ? error.message : String(error)}`,
     );
   }

@@ -1,5 +1,5 @@
-import * as core from '@actions/core';
-import * as http from 'http';
+import { debug as coreDebug, info as coreInfo } from '@actions/core';
+import { get as httpGet } from 'http';
 
 export async function waitForReady(
   baseUrl: string,
@@ -9,7 +9,7 @@ export async function waitForReady(
   const timeoutMs = timeoutSeconds * 1000;
   const pollIntervalMs = 2000;
 
-  core.info(
+  coreInfo(
     `Polling ${baseUrl}/health/readiness (timeout: ${timeoutSeconds}s)...`,
   );
 
@@ -19,9 +19,9 @@ export async function waitForReady(
       if (healthy) {
         return;
       }
-      core.debug('Health check returned non-200 status, retrying...');
+      coreDebug('Health check returned non-200 status, retrying...');
     } catch {
-      core.debug('Health check connection failed, retrying...');
+      coreDebug('Health check connection failed, retrying...');
     }
 
     await sleep(pollIntervalMs);
@@ -35,7 +35,7 @@ export async function waitForReady(
 function checkHealth(baseUrl: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const url = `${baseUrl}/health/readiness`;
-    const req = http.get(url, (res) => {
+    const req = httpGet(url, (res) => {
       res.resume();
       resolve(res.statusCode === 200);
     });
