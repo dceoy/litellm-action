@@ -117630,10 +117630,11 @@ async function run() {
         addPath(uvBinDir);
         (external_node_process_default()).env['PATH'] =
             `${uvBinDir}${external_path_namespaceObject.delimiter}${(external_node_process_default()).env['PATH'] ?? ''}`;
+        const tempDir = (0,external_fs_namespaceObject.mkdtempSync)((0,external_path_namespaceObject.join)((0,external_os_.tmpdir)(), 'litellm-'));
         // Determine config file path
         let resolvedConfigPath = configPath;
         if (config && !configPath) {
-            const tmpConfigPath = (0,external_path_namespaceObject.join)((0,external_os_.tmpdir)(), 'litellm-config.yaml');
+            const tmpConfigPath = (0,external_path_namespaceObject.join)(tempDir, 'litellm-config.yaml');
             (0,external_fs_namespaceObject.writeFileSync)(tmpConfigPath, config, 'utf-8');
             resolvedConfigPath = tmpConfigPath;
             info(`Wrote inline config to ${tmpConfigPath}`);
@@ -117659,7 +117660,7 @@ async function run() {
         }
         env['LITELLM_LOG'] = logLevel;
         // Start the proxy server
-        const logFilePath = (0,external_path_namespaceObject.join)((0,external_os_.tmpdir)(), 'litellm-proxy.log');
+        const logFilePath = (0,external_path_namespaceObject.join)(tempDir, 'litellm-proxy.log');
         const logFd = (0,external_fs_namespaceObject.openSync)(logFilePath, 'w');
         info(`Starting LiteLLM proxy on port ${port}...`);
         info(`Command: litellm ${litellmArgs.join(' ')}`);

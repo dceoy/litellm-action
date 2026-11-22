@@ -14,6 +14,7 @@ import { spawn } from 'child_process';
 import {
   closeSync as fsCloseSync,
   existsSync as fsExistsSync,
+  mkdtempSync as fsMkdtempSync,
   openSync as fsOpenSync,
   readFileSync as fsReadFileSync,
   writeFileSync as fsWriteFileSync,
@@ -110,10 +111,12 @@ export async function run(): Promise<void> {
     process.env['PATH'] =
       `${uvBinDir}${pathDelimiter}${process.env['PATH'] ?? ''}`;
 
+    const tempDir = fsMkdtempSync(pathJoin(osTmpdir(), 'litellm-'));
+
     // Determine config file path
     let resolvedConfigPath = configPath;
     if (config && !configPath) {
-      const tmpConfigPath = pathJoin(osTmpdir(), 'litellm-config.yaml');
+      const tmpConfigPath = pathJoin(tempDir, 'litellm-config.yaml');
       fsWriteFileSync(tmpConfigPath, config, 'utf-8');
       resolvedConfigPath = tmpConfigPath;
       coreInfo(`Wrote inline config to ${tmpConfigPath}`);
@@ -146,7 +149,7 @@ export async function run(): Promise<void> {
     env['LITELLM_LOG'] = logLevel;
 
     // Start the proxy server
-    const logFilePath = pathJoin(osTmpdir(), 'litellm-proxy.log');
+    const logFilePath = pathJoin(tempDir, 'litellm-proxy.log');
     const logFd = fsOpenSync(logFilePath, 'w');
 
     coreInfo(`Starting LiteLLM proxy on port ${port}...`);

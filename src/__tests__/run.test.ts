@@ -11,6 +11,7 @@ jest.mock('child_process', () => ({
 }));
 jest.mock('fs', () => ({
   ...jest.requireActual('fs'),
+  mkdtempSync: jest.fn(),
   writeFileSync: jest.fn(),
   openSync: jest.fn(),
   closeSync: jest.fn(),
@@ -36,6 +37,7 @@ const spawnMock = childProcess.spawn as jest.MockedFunction<
   typeof childProcess.spawn
 >;
 const fsMock = {
+  mkdtempSync: fs.mkdtempSync as jest.Mock,
   writeFileSync: fs.writeFileSync as jest.Mock,
   openSync: fs.openSync as jest.Mock,
   closeSync: fs.closeSync as jest.Mock,
@@ -99,6 +101,7 @@ describe('run', () => {
     spawnMock.mockReturnValue(
       createMockChild(12_345) as ReturnType<typeof childProcess.spawn>,
     );
+    fsMock.mkdtempSync.mockReturnValue('/tmp/litellm-unique');
     fsMock.openSync.mockReturnValue(3);
     fsMock.closeSync.mockReturnValue(undefined);
     fsMock.writeFileSync.mockReturnValue(undefined);
@@ -221,13 +224,13 @@ describe('run', () => {
     await run();
 
     expect(fsMock.writeFileSync).toHaveBeenCalledWith(
-      '/tmp/litellm-config.yaml',
+      '/tmp/litellm-unique/litellm-config.yaml',
       'model_list:\n  - model: gpt-4',
       'utf-8',
     );
     expect(spawnMock).toHaveBeenCalledWith(
       'litellm',
-      ['--port', '4000', '--config', '/tmp/litellm-config.yaml'],
+      ['--port', '4000', '--config', '/tmp/litellm-unique/litellm-config.yaml'],
       expect.any(Object),
     );
   });
