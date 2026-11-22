@@ -55419,6 +55419,18 @@ module.exports = /*#__PURE__*/JSON.parse('{"name":"@actions/cache","version":"6.
 /******/ 	/* webpack/runtime/asset-relocator-loader */
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/create fake namespace object */
 /******/ 	(() => {
 /******/ 		var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
@@ -63409,6 +63421,7 @@ const external_node_os_namespaceObject = require("node:os");
 var external_node_util_ = __nccwpck_require__(7975);
 ;// CONCATENATED MODULE: external "node:process"
 const external_node_process_namespaceObject = require("node:process");
+var external_node_process_default = /*#__PURE__*/__nccwpck_require__.n(external_node_process_namespaceObject);
 ;// CONCATENATED MODULE: ./node_modules/.pnpm/@typespec+ts-http-runtime@0.3.10_supports-color@8.1.1/node_modules/@typespec/ts-http-runtime/dist/esm/logger/log.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -117445,17 +117458,17 @@ function saveCacheV2(paths_1, key_1, options_1) {
 
 
 function getCachePaths() {
-    const home = external_os_.homedir();
+    const home = (0,external_os_.homedir)();
     return [
-        external_path_namespaceObject.join(home, '.local', 'share', 'uv'),
-        external_path_namespaceObject.join(home, '.local', 'bin'),
+        (0,external_path_namespaceObject.join)(home, '.local', 'share', 'uv'),
+        (0,external_path_namespaceObject.join)(home, '.local', 'bin'),
     ];
 }
 function getCacheKey(version, pipInstallArgs) {
-    const platform = external_os_.platform();
-    const arch = external_os_.arch();
+    const platform = (0,external_os_.platform)();
+    const arch = (0,external_os_.arch)();
     const versionPart = version;
-    const hash = external_crypto_namespaceObject.createHash('sha256')
+    const hash = (0,external_crypto_namespaceObject.createHash)('sha256')
         .update(pipInstallArgs)
         .digest('hex')
         .slice(0, 16);
@@ -117517,7 +117530,7 @@ async function waitForReady(baseUrl, timeoutSeconds) {
 function checkHealth(baseUrl) {
     return new Promise((resolve, reject) => {
         const url = `${baseUrl}/health/readiness`;
-        const req = external_http_.get(url, (res) => {
+        const req = (0,external_http_.get)(url, (res) => {
             res.resume();
             resolve(res.statusCode === 200);
         });
@@ -117541,6 +117554,8 @@ function wait_for_ready_sleep(ms) {
 
 
 
+
+const WHITESPACE = /\s+/u;
 async function run() {
     try {
         const version = getInput('version');
@@ -117550,12 +117565,12 @@ async function run() {
         const port = getInput('port') || '4000';
         const logLevel = getInput('log-level') || 'INFO';
         const apiKey = getInput('api-key');
-        const timeout = parseInt(getInput('timeout') || '120', 10);
+        const timeout = Number.parseInt(getInput('timeout') || '120', 10);
         const extraArgs = getInput('extra-args');
         const pipInstallArgs = getInput('pip-install-args');
         const cacheEnabled = getInput('cache') !== 'false' && version !== '';
-        const isWindows = external_os_.platform() === 'win32';
-        const uvBinDir = external_path_namespaceObject.join(external_os_.homedir(), '.local', 'bin');
+        const isWindows = (0,external_os_.platform)() === 'win32';
+        const uvBinDir = (0,external_path_namespaceObject.join)((0,external_os_.homedir)(), '.local', 'bin');
         // Try to restore from cache (only when version is pinned)
         let cacheHit = false;
         if (cacheEnabled) {
@@ -117601,7 +117616,7 @@ async function run() {
                 : 'litellm[proxy]';
             const uvArgs = ['tool', 'install', litellmPackage];
             if (pipInstallArgs) {
-                uvArgs.push(...pipInstallArgs.split(/\s+/).filter(Boolean));
+                uvArgs.push(...pipInstallArgs.split(WHITESPACE).filter(Boolean));
             }
             await exec_exec('uv', uvArgs);
             endGroup();
@@ -117613,13 +117628,13 @@ async function run() {
             }
         }
         addPath(uvBinDir);
-        process.env['PATH'] =
-            `${uvBinDir}${external_path_namespaceObject.delimiter}${process.env['PATH'] ?? ''}`;
+        (external_node_process_default()).env['PATH'] =
+            `${uvBinDir}${external_path_namespaceObject.delimiter}${(external_node_process_default()).env['PATH'] ?? ''}`;
         // Determine config file path
         let resolvedConfigPath = configPath;
         if (config && !configPath) {
-            const tmpConfigPath = external_path_namespaceObject.join(external_os_.tmpdir(), 'litellm-config.yaml');
-            external_fs_namespaceObject.writeFileSync(tmpConfigPath, config, 'utf-8');
+            const tmpConfigPath = (0,external_path_namespaceObject.join)((0,external_os_.tmpdir)(), 'litellm-config.yaml');
+            (0,external_fs_namespaceObject.writeFileSync)(tmpConfigPath, config, 'utf-8');
             resolvedConfigPath = tmpConfigPath;
             info(`Wrote inline config to ${tmpConfigPath}`);
         }
@@ -117635,17 +117650,17 @@ async function run() {
             litellmArgs.push('--detailed_debug');
         }
         if (extraArgs) {
-            litellmArgs.push(...extraArgs.split(/\s+/).filter(Boolean));
+            litellmArgs.push(...extraArgs.split(WHITESPACE).filter(Boolean));
         }
         // Set up environment variables
-        const env = { ...process.env };
+        const env = { ...(external_node_process_default()).env };
         if (apiKey) {
             env['LITELLM_MASTER_KEY'] = apiKey;
         }
         env['LITELLM_LOG'] = logLevel;
         // Start the proxy server
-        const logFilePath = external_path_namespaceObject.join(external_os_.tmpdir(), 'litellm-proxy.log');
-        const logFd = external_fs_namespaceObject.openSync(logFilePath, 'w');
+        const logFilePath = (0,external_path_namespaceObject.join)((0,external_os_.tmpdir)(), 'litellm-proxy.log');
+        const logFd = (0,external_fs_namespaceObject.openSync)(logFilePath, 'w');
         info(`Starting LiteLLM proxy on port ${port}...`);
         info(`Command: litellm ${litellmArgs.join(' ')}`);
         const child = (0,external_child_process_namespaceObject.spawn)('litellm', litellmArgs, {
@@ -117655,7 +117670,7 @@ async function run() {
             shell: isWindows,
         });
         child.unref();
-        external_fs_namespaceObject.closeSync(logFd);
+        (0,external_fs_namespaceObject.closeSync)(logFd);
         if (child.pid === undefined) {
             throw new Error('Failed to start LiteLLM proxy server');
         }
@@ -117675,9 +117690,9 @@ async function run() {
     }
     catch (error) {
         const logFile = getState('log-file');
-        if (logFile && external_fs_namespaceObject.existsSync(logFile)) {
+        if (logFile && (0,external_fs_namespaceObject.existsSync)(logFile)) {
             startGroup('LiteLLM Proxy Logs');
-            info(external_fs_namespaceObject.readFileSync(logFile, 'utf-8'));
+            info((0,external_fs_namespaceObject.readFileSync)(logFile, 'utf-8'));
             endGroup();
         }
         if (error instanceof Error) {
@@ -117691,6 +117706,7 @@ async function run() {
 //# sourceMappingURL=run.js.map
 ;// CONCATENATED MODULE: ./lib/main.js
 
+// biome-ignore lint/complexity/noVoid: Explicitly detach the async action entry point.
 void run();
 //# sourceMappingURL=main.js.map
 })();

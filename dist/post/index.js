@@ -45901,6 +45901,35 @@ module.exports = require("util");
 /******/ 	/* webpack/runtime/asset-relocator-loader */
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
 /******/ 		__nccwpck_require__.nmd = (module) => {
@@ -48861,24 +48890,28 @@ function getIDToken(aud) {
  */
 
 //# sourceMappingURL=core.js.map
+;// CONCATENATED MODULE: external "node:process"
+const external_node_process_namespaceObject = require("node:process");
+var external_node_process_default = /*#__PURE__*/__nccwpck_require__.n(external_node_process_namespaceObject);
 ;// CONCATENATED MODULE: ./lib/cleanup.js
 
 
 
 
+
 async function terminateProcess(pid) {
-    if (external_os_namespaceObject.platform() === 'win32') {
+    if ((0,external_os_namespaceObject.platform)() === 'win32') {
         await exec_exec('taskkill', ['/T', '/F', '/PID', pid.toString()]);
     }
     else {
-        process.kill(-pid, 'SIGTERM');
+        external_node_process_default().kill(-pid, 'SIGTERM');
     }
 }
 async function cleanup() {
     const pidStr = getState('pid');
     const logFile = getState('log-file');
     if (pidStr) {
-        const pid = parseInt(pidStr, 10);
+        const pid = Number.parseInt(pidStr, 10);
         info(`Stopping LiteLLM proxy (PID: ${pid})...`);
         try {
             await terminateProcess(pid);
@@ -48893,9 +48926,9 @@ async function cleanup() {
             }
         }
     }
-    if (logFile && external_fs_namespaceObject.existsSync(logFile)) {
+    if (logFile && (0,external_fs_namespaceObject.existsSync)(logFile)) {
         startGroup('LiteLLM Proxy Logs');
-        const logs = external_fs_namespaceObject.readFileSync(logFile, 'utf-8');
+        const logs = (0,external_fs_namespaceObject.readFileSync)(logFile, 'utf-8');
         if (logs.trim()) {
             info(logs);
         }
@@ -48908,6 +48941,7 @@ async function cleanup() {
 //# sourceMappingURL=cleanup.js.map
 ;// CONCATENATED MODULE: ./lib/post.js
 
+// biome-ignore lint/complexity/noVoid: Explicitly detach the async action entry point.
 void cleanup();
 //# sourceMappingURL=post.js.map
 })();
